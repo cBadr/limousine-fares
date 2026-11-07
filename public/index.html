@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>قائمة أسعار الليموزين</title>
+  <meta name="description" content="قائمة أسعار تشغيل الليموزين للمطارات والمحافظات — بحث وطباعة وتصدير.">
+  <meta name="theme-color" content="#141d36">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/vendor/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/vendor/fonts/reem-kufi-arabic-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="/assets/theme.js"></script>
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+  <a class="skip-link" href="#zones">تخطَّ إلى الأسعار</a>
+
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="masthead-top">
+        <div class="brand">
+          <span class="brand-mark" id="brand-mark" aria-hidden="true"></span>
+          <span class="brand-name" id="brand-name">&nbsp;</span>
+        </div>
+        <button class="icon-btn band-btn" id="theme-btn" type="button"></button>
+      </div>
+
+      <div class="masthead-main">
+        <div class="masthead-copy">
+          <p class="eyebrow">تعريفة التشغيل الرسمية</p>
+          <h1 id="page-title">قائمة الأسعار</h1>
+          <p class="subtitle" id="page-subtitle"></p>
+          <dl class="facts" id="facts"></dl>
+        </div>
+
+        <aside class="ticket" aria-label="تاريخ سريان الأسعار">
+          <span class="ticket-label">سارية اعتباراً من</span>
+          <strong class="ticket-date" id="effective-date">—</strong>
+          <span class="ticket-rule" aria-hidden="true"></span>
+          <span class="ticket-meta" id="updated-at"></span>
+        </aside>
+      </div>
+    </div>
+  </header>
+
+  <div class="toolbar" id="toolbar">
+    <div class="toolbar-inner">
+      <div class="search">
+        <label class="sr-only" for="q">ابحث عن منطقة أو وجهة</label>
+        <span class="search-icon" id="search-icon"></span>
+        <input class="search-input" id="q" type="search" autocomplete="off" spellcheck="false"
+               placeholder="ابحث عن منطقة أو وجهة… مثل التجمع، مارينا، شرم">
+        <kbd class="search-kbd" aria-hidden="true">/</kbd>
+      </div>
+
+      <div class="toolbar-controls">
+        <div class="segmented" id="vehicle-switch" role="group" aria-label="فئة السيارة"></div>
+
+        <div class="actions">
+          <button class="btn" id="print-btn" type="button"></button>
+          <div class="menu-wrap">
+            <button class="btn" id="export-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="export-menu"></button>
+            <div class="menu" id="export-menu" role="menu" hidden>
+              <button role="menuitem" type="button" data-export="xlsx"></button>
+              <button role="menuitem" type="button" data-export="csv"></button>
+              <button role="menuitem" type="button" data-export="pdf"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="chips-wrap" aria-label="تصفية حسب المنطقة">
+      <div class="chips" id="chips"></div>
+    </nav>
+  </div>
+
+  <main class="content" id="main">
+    <div class="print-head" aria-hidden="true">
+      <div>
+        <strong id="print-brand"></strong>
+        <span id="print-title"></span>
+      </div>
+      <div id="print-meta"></div>
+    </div>
+
+    <p class="result-line" id="result-line" aria-live="polite"></p>
+
+    <div id="zones" class="zones" tabindex="-1">
+      <div class="skeleton" aria-hidden="true">
+        <div></div><div></div><div></div>
+      </div>
+    </div>
+
+    <section class="terms" id="terms" aria-labelledby="terms-title" hidden>
+      <h2 id="terms-title">الشروط والإضافات</h2>
+      <ol id="terms-list"></ol>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span id="footer-brand"></span>
+      <span class="footer-sep" aria-hidden="true">·</span>
+      <span>الأسعار بالجنيه المصري وقابلة للتعديل</span>
+      <a class="footer-admin" href="/admin" id="admin-link"></a>
+    </div>
+  </footer>
+
+  <script src="/vendor/xlsx.full.min.js" defer></script>
+  <script src="/assets/common.js" defer></script>
+  <script src="/assets/app.js" defer></script>
+</body>
+</html>

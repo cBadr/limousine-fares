@@ -1,0 +1,1220 @@
+{
+  "settings": {
+    "brand": "ليموزين",
+    "title": "قائمة أسعار القاهرة",
+    "subtitle": "أسعار التوصيل من وإلى القاهرة والمطارات والمحافظات",
+    "effectiveDate": "2026-03-12",
+    "currency": "ج.م",
+    "phone": ""
+  },
+  "vehicles": [
+    {
+      "id": "sedan",
+      "name": "سيدان"
+    },
+    {
+      "id": "van",
+      "name": "ميني فان"
+    }
+  ],
+  "fareTypes": [
+    {
+      "id": "commercial",
+      "name": "تجاري"
+    },
+    {
+      "id": "suitable",
+      "name": "مناسب"
+    },
+    {
+      "id": "round",
+      "name": "ذهاب وعودة"
+    }
+  ],
+  "sections": [
+    {
+      "id": "s_f654190b",
+      "name": "مطار القاهرة",
+      "note": ""
+    },
+    {
+      "id": "s_0a2e7266",
+      "name": "مطار سفنكس",
+      "note": ""
+    },
+    {
+      "id": "s_9d893741",
+      "name": "الإسكندريه",
+      "note": ""
+    },
+    {
+      "id": "s_baa90f00",
+      "name": "الساحل الشمالي",
+      "note": ""
+    },
+    {
+      "id": "s_7ef1ddd3",
+      "name": "خط الزراعى",
+      "note": ""
+    },
+    {
+      "id": "s_29830290",
+      "name": "القنال",
+      "note": ""
+    },
+    {
+      "id": "s_48b46616",
+      "name": "البحر الأحمر",
+      "note": ""
+    },
+    {
+      "id": "s_261d1fd8",
+      "name": "جنوب سيناء",
+      "note": ""
+    },
+    {
+      "id": "s_92faa1f4",
+      "name": "خط الصعيد",
+      "note": ""
+    },
+    {
+      "id": "s_ea834414",
+      "name": "اليوميات داخل القاهرة",
+      "note": ""
+    }
+  ],
+  "routes": [
+    {
+      "id": "r_64e84526",
+      "sectionId": "s_f654190b",
+      "name": "مدينة نصر - مصر الجديده",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 450,
+          "suitable": null,
+          "round": 900
+        },
+        "van": {
+          "commercial": 500,
+          "suitable": null,
+          "round": 1000
+        }
+      }
+    },
+    {
+      "id": "r_3e508338",
+      "sectionId": "s_f654190b",
+      "name": "زمالك - مهندسين - عجوزه - وسط البلد - الدقى - الرحاب - المعادى",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 550,
+          "suitable": null,
+          "round": 1100
+        },
+        "van": {
+          "commercial": 600,
+          "suitable": null,
+          "round": 1200
+        }
+      }
+    },
+    {
+      "id": "r_00208895",
+      "sectionId": "s_f654190b",
+      "name": "جسر السويس - عين شمس - المطريه - الزيتون - حدائق القبة - التجمع",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 550,
+          "suitable": null,
+          "round": 1100
+        },
+        "van": {
+          "commercial": 600,
+          "suitable": null,
+          "round": 1200
+        }
+      }
+    },
+    {
+      "id": "r_4ca6326d",
+      "sectionId": "s_f654190b",
+      "name": "مافيدا - هايد بارك - العبور",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 600,
+          "suitable": null,
+          "round": 1200
+        },
+        "van": {
+          "commercial": 650,
+          "suitable": null,
+          "round": 1300
+        }
+      }
+    },
+    {
+      "id": "r_74d82558",
+      "sectionId": "s_f654190b",
+      "name": "الهرم - فيصل - مريوطية - حتي ميدان الرماية",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 650,
+          "suitable": null,
+          "round": 1300
+        },
+        "van": {
+          "commercial": 700,
+          "suitable": null,
+          "round": 1400
+        }
+      }
+    },
+    {
+      "id": "r_a434621a",
+      "sectionId": "s_f654190b",
+      "name": "حدائق الاهرام - أكتوبر - مدينتي - الشروق - المستقبل",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 750,
+          "suitable": null,
+          "round": 1400
+        },
+        "van": {
+          "commercial": 800,
+          "suitable": null,
+          "round": 1500
+        }
+      }
+    },
+    {
+      "id": "r_c84a4f58",
+      "sectionId": "s_f654190b",
+      "name": "حلوان - 15 مايو - بدر - العاشر من رمضان",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 850,
+          "suitable": null,
+          "round": 1600
+        },
+        "van": {
+          "commercial": 950,
+          "suitable": null,
+          "round": 1800
+        }
+      }
+    },
+    {
+      "id": "r_e8de2e70",
+      "sectionId": "s_0a2e7266",
+      "name": "الرحاب - التجمع - مدينة نصر - مصر الجديده - المعادى - زهراء المعادى",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 900,
+          "suitable": null,
+          "round": 1800
+        },
+        "van": {
+          "commercial": 1000,
+          "suitable": null,
+          "round": 2000
+        }
+      }
+    },
+    {
+      "id": "r_8ff87766",
+      "sectionId": "s_0a2e7266",
+      "name": "أكتوبر - الشيخ زايد - حدائق أكتوبر - حدائق الأهرام",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 800,
+          "suitable": null,
+          "round": 1600
+        },
+        "van": {
+          "commercial": 900,
+          "suitable": null,
+          "round": 1800
+        }
+      }
+    },
+    {
+      "id": "r_2fc7cd2e",
+      "sectionId": "s_0a2e7266",
+      "name": "وسط البلد - مهندسين - الدقى - المهندسين - العجوزه - الهرم - فيصل",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 850,
+          "suitable": null,
+          "round": 1700
+        },
+        "van": {
+          "commercial": 950,
+          "suitable": null,
+          "round": 1900
+        }
+      }
+    },
+    {
+      "id": "r_be075509",
+      "sectionId": "s_0a2e7266",
+      "name": "مطار سفنكس - مدينتي - الشروق - مدينة بدر - المستقبل",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1200,
+          "suitable": null,
+          "round": null
+        },
+        "van": {
+          "commercial": 1300,
+          "suitable": null,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_613016d2",
+      "sectionId": "s_9d893741",
+      "name": "من أكتوبر والشيخ ذايد ومطار سفنكس الي اسكندرية",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1550,
+          "suitable": 1300,
+          "round": 2600
+        },
+        "van": {
+          "commercial": 1650,
+          "suitable": 1400,
+          "round": 2800
+        }
+      }
+    },
+    {
+      "id": "r_997ac73f",
+      "sectionId": "s_9d893741",
+      "name": "القاهرة - اسكندرية (وسط البلد حتي التجمع قبل الجامعة الامريكية)",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1600,
+          "suitable": 1350,
+          "round": 2700
+        },
+        "van": {
+          "commercial": 1700,
+          "suitable": 1450,
+          "round": 2900
+        }
+      }
+    },
+    {
+      "id": "r_36370654",
+      "sectionId": "s_9d893741",
+      "name": "مطار برج العرب ومدينة برج العرب - أبو قير - معمورة البلد - العجمى",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1700,
+          "suitable": 1450,
+          "round": 2900
+        },
+        "van": {
+          "commercial": 1800,
+          "suitable": 1550,
+          "round": 3100
+        }
+      }
+    },
+    {
+      "id": "r_69247be9",
+      "sectionId": "s_9d893741",
+      "name": "اسكندرية - مطار القاهرة - الرحاب - التجمع من اول الجامعه الامريكية",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1650,
+          "suitable": 1400,
+          "round": 2800
+        },
+        "van": {
+          "commercial": 1750,
+          "suitable": 1500,
+          "round": 3000
+        }
+      }
+    },
+    {
+      "id": "r_3881cf0c",
+      "sectionId": "s_9d893741",
+      "name": "اسكندرية - مدينتي - م المستقبل - الشروق - (البرج - مدينه او مطار)",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1800,
+          "suitable": 1550,
+          "round": 3000
+        },
+        "van": {
+          "commercial": 1900,
+          "suitable": 1700,
+          "round": 3300
+        }
+      }
+    },
+    {
+      "id": "r_35ee426d",
+      "sectionId": "s_9d893741",
+      "name": "اسكندرية - العاشر - بدر",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1850,
+          "suitable": 1600,
+          "round": 3100
+        },
+        "van": {
+          "commercial": 1950,
+          "suitable": 1750,
+          "round": 3400
+        }
+      }
+    },
+    {
+      "id": "r_34b14cd2",
+      "sectionId": "s_9d893741",
+      "name": "من العاصمة الادارية الي الاسكندرية والعكس",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1950,
+          "suitable": 1700,
+          "round": 3300
+        },
+        "van": {
+          "commercial": 2100,
+          "suitable": 1850,
+          "round": 3600
+        }
+      }
+    },
+    {
+      "id": "r_5d1b8453",
+      "sectionId": "s_9d893741",
+      "name": "اوفر داي اسكندرية يومية 8 ساعات",
+      "kind": "flat",
+      "prices": {
+        "sedan": {
+          "commercial": 3700,
+          "suitable": null,
+          "round": null
+        },
+        "van": {
+          "commercial": 3900,
+          "suitable": null,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_0c4b5a22",
+      "sectionId": "s_baa90f00",
+      "name": "من سيدي كرير حتي بوابة الحمام ( حتي الكيلو 60 )",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 2000,
+          "suitable": 1800,
+          "round": 3600
+        },
+        "van": {
+          "commercial": 2100,
+          "suitable": 1900,
+          "round": 3800
+        }
+      }
+    },
+    {
+      "id": "r_85ebc7f4",
+      "sectionId": "s_baa90f00",
+      "name": "مارينا من الكيلو 61 حتي الكيلو 100 مارينا 7",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 2500,
+          "suitable": 2200,
+          "round": 4400
+        },
+        "van": {
+          "commercial": 2700,
+          "suitable": 2400,
+          "round": 4800
+        }
+      }
+    },
+    {
+      "id": "r_c7d8f6d5",
+      "sectionId": "s_baa90f00",
+      "name": "بورتو جولف مارينا - ريكسوس برييميوم - عبدالرجمن - مراسي - العالمين حتي هايسيندا وايت(حتي الكيلو140)",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 2800,
+          "suitable": 2500,
+          "round": 5000
+        },
+        "van": {
+          "commercial": 3000,
+          "suitable": 2700,
+          "round": 5400
+        }
+      }
+    },
+    {
+      "id": "r_09db512c",
+      "sectionId": "s_baa90f00",
+      "name": "تلال - غزالة - الضبعة (من الكيلو 141 حتي الكيلو 180 قرية امارات هايتس)",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 3000,
+          "suitable": 2700,
+          "round": 5400
+        },
+        "van": {
+          "commercial": 3200,
+          "suitable": 2900,
+          "round": 5800
+        }
+      }
+    },
+    {
+      "id": "r_61a15931",
+      "sectionId": "s_baa90f00",
+      "name": "سيدي حنيش - راس الحكمة - مطروح - فوكا باي",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 3600,
+          "suitable": 3300,
+          "round": 6600
+        },
+        "van": {
+          "commercial": 3900,
+          "suitable": 3600,
+          "round": 7200
+        }
+      }
+    },
+    {
+      "id": "r_ecd80933",
+      "sectionId": "s_baa90f00",
+      "name": "السلوم - مينا جرجوب",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 5800,
+          "suitable": 5200,
+          "round": null
+        },
+        "van": {
+          "commercial": 6000,
+          "suitable": 5600,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_79756703",
+      "sectionId": "s_baa90f00",
+      "name": "سيوة",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 7000,
+          "suitable": null,
+          "round": null
+        },
+        "van": {
+          "commercial": 7400,
+          "suitable": null,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_b47c9d7f",
+      "sectionId": "s_baa90f00",
+      "name": "وادي النطرون - السادات",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1500,
+          "suitable": 1300,
+          "round": 2100
+        },
+        "van": {
+          "commercial": 1600,
+          "suitable": 1400,
+          "round": 2200
+        }
+      }
+    },
+    {
+      "id": "r_a7429bcc",
+      "sectionId": "s_baa90f00",
+      "name": "اوفر داي وادي النطرون 3 اديرة",
+      "kind": "flat",
+      "prices": {
+        "sedan": {
+          "commercial": 3100,
+          "suitable": null,
+          "round": null
+        },
+        "van": {
+          "commercial": 3400,
+          "suitable": null,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_142cda95",
+      "sectionId": "s_7ef1ddd3",
+      "name": "دمنهور - كفر الزيات - كفر الدوار",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1700,
+          "suitable": 1500,
+          "round": 3000
+        },
+        "van": {
+          "commercial": 1850,
+          "suitable": 1600,
+          "round": 3200
+        }
+      }
+    },
+    {
+      "id": "r_b8d7e437",
+      "sectionId": "s_7ef1ddd3",
+      "name": "كفر الشيخ المحافظة - المحلة - المنصورة",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1600,
+          "suitable": 1400,
+          "round": 2300
+        },
+        "van": {
+          "commercial": 1700,
+          "suitable": 1500,
+          "round": 2400
+        }
+      }
+    },
+    {
+      "id": "r_8c43a43e",
+      "sectionId": "s_7ef1ddd3",
+      "name": "شربين - بلقاس - سيدي سالم - دسوق - فاقوس - ابو كبير",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1800,
+          "suitable": 1600,
+          "round": 2600
+        },
+        "van": {
+          "commercial": 1900,
+          "suitable": 1700,
+          "round": 2900
+        }
+      }
+    },
+    {
+      "id": "r_8a65a437",
+      "sectionId": "s_7ef1ddd3",
+      "name": "الزقازيق - ميت غمر",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1300,
+          "suitable": 1100,
+          "round": 2000
+        },
+        "van": {
+          "commercial": 1400,
+          "suitable": 1200,
+          "round": 2100
+        }
+      }
+    },
+    {
+      "id": "r_2f8fdea9",
+      "sectionId": "s_7ef1ddd3",
+      "name": "الاسماعيلية - السويس - المنوفية - طنطا",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1500,
+          "suitable": 1300,
+          "round": 2200
+        },
+        "van": {
+          "commercial": 1600,
+          "suitable": 1400,
+          "round": 2300
+        }
+      }
+    },
+    {
+      "id": "r_d45caac2",
+      "sectionId": "s_7ef1ddd3",
+      "name": "بنها - العاصمة الإدارية",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1000,
+          "suitable": 900,
+          "round": 1700
+        },
+        "van": {
+          "commercial": 1100,
+          "suitable": 1000,
+          "round": 1800
+        }
+      }
+    },
+    {
+      "id": "r_807f435c",
+      "sectionId": "s_29830290",
+      "name": "بورسعيد - بورفؤاد",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1800,
+          "suitable": 1600,
+          "round": 2700
+        },
+        "van": {
+          "commercial": 1900,
+          "suitable": 1700,
+          "round": 2900
+        }
+      }
+    },
+    {
+      "id": "r_fb092b17",
+      "sectionId": "s_29830290",
+      "name": "دمياط - بورتو سعيد",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 2000,
+          "suitable": 1700,
+          "round": 3000
+        },
+        "van": {
+          "commercial": 2100,
+          "suitable": 1800,
+          "round": 3200
+        }
+      }
+    },
+    {
+      "id": "r_e9436cb8",
+      "sectionId": "s_29830290",
+      "name": "راس البر",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 2100,
+          "suitable": 1800,
+          "round": 3200
+        },
+        "van": {
+          "commercial": 2200,
+          "suitable": 1900,
+          "round": 3400
+        }
+      }
+    },
+    {
+      "id": "r_1b9baa8a",
+      "sectionId": "s_48b46616",
+      "name": "السخنة حتي بورتو السخنه",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1600,
+          "suitable": 1400,
+          "round": 2400
+        },
+        "van": {
+          "commercial": 1700,
+          "suitable": 1500,
+          "round": 2600
+        }
+      }
+    },
+    {
+      "id": "r_814a4218",
+      "sectionId": "s_48b46616",
+      "name": "السخنة( للزعفرانة)",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1800,
+          "suitable": 1500,
+          "round": 2700
+        },
+        "van": {
+          "commercial": 1900,
+          "suitable": 1600,
+          "round": 2900
+        }
+      }
+    },
+    {
+      "id": "r_14706caf",
+      "sectionId": "s_48b46616",
+      "name": "الغردقة - الجونة",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 3500,
+          "suitable": 3200,
+          "round": 6000
+        },
+        "van": {
+          "commercial": 3700,
+          "suitable": 3400,
+          "round": 6500
+        }
+      }
+    },
+    {
+      "id": "r_af6d3c15",
+      "sectionId": "s_48b46616",
+      "name": "مكادي - سهل حشيش",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 3600,
+          "suitable": 3300,
+          "round": 6200
+        },
+        "van": {
+          "commercial": 3800,
+          "suitable": 3500,
+          "round": 6600
+        }
+      }
+    },
+    {
+      "id": "r_c91ddf5c",
+      "sectionId": "s_48b46616",
+      "name": "سوما باي - سفاجا",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 3700,
+          "suitable": 3400,
+          "round": 6300
+        },
+        "van": {
+          "commercial": 3900,
+          "suitable": 3600,
+          "round": 6700
+        }
+      }
+    },
+    {
+      "id": "r_392692e3",
+      "sectionId": "s_48b46616",
+      "name": "القصير",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 4900,
+          "suitable": 4400,
+          "round": null
+        },
+        "van": {
+          "commercial": 5100,
+          "suitable": 4600,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_b1c591b5",
+      "sectionId": "s_48b46616",
+      "name": "مرسي علم",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 6000,
+          "suitable": 5500,
+          "round": null
+        },
+        "van": {
+          "commercial": 6300,
+          "suitable": 5800,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_c519699a",
+      "sectionId": "s_261d1fd8",
+      "name": "راس سدر",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 2400,
+          "suitable": 2200,
+          "round": 3500
+        },
+        "van": {
+          "commercial": 2500,
+          "suitable": 2300,
+          "round": 3600
+        }
+      }
+    },
+    {
+      "id": "r_9ca82481",
+      "sectionId": "s_261d1fd8",
+      "name": "راس سدر بعد راس مطارمة",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 2500,
+          "suitable": 2300,
+          "round": 3700
+        },
+        "van": {
+          "commercial": 2600,
+          "suitable": 2400,
+          "round": 3800
+        }
+      }
+    },
+    {
+      "id": "r_c9765f9e",
+      "sectionId": "s_261d1fd8",
+      "name": "شرم الشيخ",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 4000,
+          "suitable": 3600,
+          "round": null
+        },
+        "van": {
+          "commercial": 4200,
+          "suitable": 3800,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_51f37c4b",
+      "sectionId": "s_261d1fd8",
+      "name": "دهب - سانت كاترين",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 4600,
+          "suitable": 4100,
+          "round": null
+        },
+        "van": {
+          "commercial": 4700,
+          "suitable": 4300,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_4b10aac5",
+      "sectionId": "s_261d1fd8",
+      "name": "نويبع - طابا - راس شيطان",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 5300,
+          "suitable": 4800,
+          "round": null
+        },
+        "van": {
+          "commercial": 5400,
+          "suitable": 5000,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_81ab3823",
+      "sectionId": "s_92faa1f4",
+      "name": "الفيوم - بنى سويف",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1600,
+          "suitable": 1400,
+          "round": 2300
+        },
+        "van": {
+          "commercial": 1700,
+          "suitable": 1500,
+          "round": 2400
+        }
+      }
+    },
+    {
+      "id": "r_d473185f",
+      "sectionId": "s_92faa1f4",
+      "name": "قرية تونس",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 1700,
+          "suitable": 1500,
+          "round": 2700
+        },
+        "van": {
+          "commercial": 1800,
+          "suitable": 1600,
+          "round": 2900
+        }
+      }
+    },
+    {
+      "id": "r_ecbac54c",
+      "sectionId": "s_92faa1f4",
+      "name": "أوفر داى قرية تونس",
+      "kind": "flat",
+      "prices": {
+        "sedan": {
+          "commercial": 3200,
+          "suitable": null,
+          "round": null
+        },
+        "van": {
+          "commercial": 3400,
+          "suitable": null,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_0710ecda",
+      "sectionId": "s_92faa1f4",
+      "name": "المنيا",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 2500,
+          "suitable": 2200,
+          "round": 3800
+        },
+        "van": {
+          "commercial": 2700,
+          "suitable": 2400,
+          "round": 4100
+        }
+      }
+    },
+    {
+      "id": "r_48d72959",
+      "sectionId": "s_92faa1f4",
+      "name": "ملوي",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 2800,
+          "suitable": 2500,
+          "round": 4100
+        },
+        "van": {
+          "commercial": 3000,
+          "suitable": 2700,
+          "round": 4400
+        }
+      }
+    },
+    {
+      "id": "r_4ef36d36",
+      "sectionId": "s_92faa1f4",
+      "name": "اسيوط",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 3400,
+          "suitable": 3100,
+          "round": 5100
+        },
+        "van": {
+          "commercial": 3600,
+          "suitable": 3300,
+          "round": 5300
+        }
+      }
+    },
+    {
+      "id": "r_1dd6f50b",
+      "sectionId": "s_92faa1f4",
+      "name": "سوهاج",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 4500,
+          "suitable": 4000,
+          "round": 6500
+        },
+        "van": {
+          "commercial": 4700,
+          "suitable": 4200,
+          "round": 7000
+        }
+      }
+    },
+    {
+      "id": "r_6973d0a2",
+      "sectionId": "s_92faa1f4",
+      "name": "نجع حمادي - قنا",
+      "kind": "route",
+      "prices": {
+        "sedan": {
+          "commercial": 5500,
+          "suitable": 5000,
+          "round": null
+        },
+        "van": {
+          "commercial": 5700,
+          "suitable": 5200,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_7d554c95",
+      "sectionId": "s_92faa1f4",
+      "name": "الاقصر",
+      "kind": "flat",
+      "prices": {
+        "sedan": {
+          "commercial": 6500,
+          "suitable": null,
+          "round": null
+        },
+        "van": {
+          "commercial": 7000,
+          "suitable": null,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_3a95b9b0",
+      "sectionId": "s_92faa1f4",
+      "name": "اسوان",
+      "kind": "flat",
+      "prices": {
+        "sedan": {
+          "commercial": 9000,
+          "suitable": null,
+          "round": null
+        },
+        "van": {
+          "commercial": 9300,
+          "suitable": null,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_2304b56c",
+      "sectionId": "s_ea834414",
+      "name": "يومية 8 ساعات",
+      "kind": "flat",
+      "prices": {
+        "sedan": {
+          "commercial": 2100,
+          "suitable": null,
+          "round": null
+        },
+        "van": {
+          "commercial": 2300,
+          "suitable": null,
+          "round": null
+        }
+      }
+    },
+    {
+      "id": "r_a6756b51",
+      "sectionId": "s_ea834414",
+      "name": "يومية 12 ساعه",
+      "kind": "flat",
+      "prices": {
+        "sedan": {
+          "commercial": 2300,
+          "suitable": null,
+          "round": null
+        },
+        "van": {
+          "commercial": 2500,
+          "suitable": null,
+          "round": null
+        }
+      }
+    }
+  ],
+  "notes": [
+    {
+      "id": "n_662b2abb",
+      "text": "في حالة بداية اليومية من العاصمة الادارية والعاشر ومدينه بدر وحلوان تزيد 200ج"
+    },
+    {
+      "id": "n_13eead99",
+      "text": "في حالة بداية اليومية من مدينتي او أكتوبر او الشروق تزيد 100 ج"
+    },
+    {
+      "id": "n_b78935bd",
+      "text": "في حالة بداية اليومية من المطار او النهاية في المطار تزيد 100ج"
+    },
+    {
+      "id": "n_9b173874",
+      "text": "عدد ساعات الإنتظار في الذهاب والعوده ثلاث ساعات فقط والساعه الزياده الثابته 100 ج والمتحركة 150 ج"
+    },
+    {
+      "id": "n_81455b93",
+      "text": "اليوميات الكيلو متر بالإتفاق بين الطرفين وأى كيلو زياده يحسب 7 جنيهات"
+    },
+    {
+      "id": "n_9a581871",
+      "text": "في حالة طلب جلورى او إكسباندر بشبكة في التوصيله تزيد 50 ج - في السخنه والساحل وإسكندريه تزيد 100 ج - شرم الشيخ والغردقه ومطروح وما يعادلها تزيد 200 ج"
+    },
+    {
+      "id": "n_6e6764d6",
+      "text": "في حالة وجود أوفر داى يتم زيادة 700 ج على الذهاب والعوده ( 8 ساعات مع تحركات ) وفى حالة عدم التحرك تحسب ساعات زيادة بعد الثلاث الساعات الإنتظار للذهاب واالعوده"
+    },
+    {
+      "id": "n_a72b4260",
+      "text": "اليوميه تحسب بعد ال 9 ساعات يوميه 12 ساعه"
+    }
+  ]
+}
