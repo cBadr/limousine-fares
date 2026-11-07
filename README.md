@@ -25,7 +25,7 @@ ADMIN_USER=owner ADMIN_PASSWORD="كلمة-مرور-قوية" npm start
 
 ## النشر على Vercel
 
-المشروع جاهز للنشر على Vercel: الملفات الثابتة في `public/`، والـ API عبارة عن دالة واحدة في `api/[...path].js`.
+المشروع جاهز للنشر على Vercel: الملفات الثابتة في `public/`، والـ API عبارة عن دالة واحدة في `api/index.js`.
 ولأن Vercel لا يحتفظ بالملفات بين الطلبات، تُحفظ البيانات هناك في **Upstash Redis**.
 
 1. اربط قاعدة **Upstash Redis** بالمشروع من لوحة Vercel (قسم Storage). ستُضاف المتغيرات `KV_REST_API_URL` و`KV_REST_API_TOKEN` تلقائياً.

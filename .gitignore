@@ -8,3 +8,6 @@ data/.session-secret
 .vercel/
 .env*
 .claude/
+
+.vercel
+.env*

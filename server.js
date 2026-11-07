@@ -1,7 +1,7 @@
 'use strict';
 
 // Local / self-hosted entry point: serves the static files in public/ and the API.
-// On Vercel, static files are served by the CDN and the API runs from api/[...path].js.
+// On Vercel, static files are served by the CDN and the API runs from api/index.js.
 
 const http = require('http');
 const fs = require('fs');

@@ -1,0 +1,8 @@
+.env*
+.vercel
+data/db.json
+data/users.json
+data/history
+data/INITIAL_ADMIN.txt
+data/.session-secret
+.claude
