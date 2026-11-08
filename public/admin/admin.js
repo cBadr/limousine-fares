@@ -42,7 +42,8 @@
     for (const r of b.routes) {
       const o = aRoutes.get(r.id);
       if (!o) { out.push({ kind: 'add', text: r.name || 'خط جديد', ctx: secName(b, r.sectionId) }); continue; }
-      if (o.name !== r.name) out.push({ kind: 'mod', text: 'اسم الخط', from: o.name, to: r.name });
+      if (o.name !== r.name) out.push({ kind: 'mod', text: 'اسم الوجهة', from: o.name, to: r.name });
+      if ((o.note || '') !== (r.note || '')) out.push({ kind: 'mod', text: r.name, ctx: 'ملاحظة الوجهة', from: o.note || '—', to: r.note || '—' });
       if (o.sectionId !== r.sectionId) out.push({ kind: 'mod', text: r.name, ctx: 'نقل منطقة', from: secName(a, o.sectionId), to: secName(b, r.sectionId) });
       if (o.kind !== r.kind) out.push({ kind: 'mod', text: r.name, ctx: 'نوع التسعير', from: o.kind === 'flat' ? 'سعر ثابت' : 'توصيل', to: r.kind === 'flat' ? 'سعر ثابت' : 'توصيل' });
       for (const v of b.vehicles) {
@@ -94,6 +95,7 @@
       if (ta.preset !== tb.preset) what.push(`القالب: ${(FaresTheme.PRESETS.find((p) => p.id === tb.preset) || { name: 'مخصص' }).name}`);
       if (JSON.stringify([ta.light, ta.dark]) !== JSON.stringify([tb.light, tb.dark])) what.push('الألوان');
       if (ta.fontText !== tb.fontText || ta.fontDisplay !== tb.fontDisplay || ta.fontNumbers !== tb.fontNumbers || ta.numerals !== tb.numerals) what.push('الخطوط');
+      if (JSON.stringify(ta.fareColors) !== JSON.stringify(tb.fareColors)) what.push('ألوان الأسعار');
       if (ta.scale !== tb.scale || ta.radius !== tb.radius || ta.header !== tb.header || ta.sections !== tb.sections || ta.mode !== tb.mode) what.push('طريقة العرض');
       out.push({ kind: 'mod', text: 'المظهر', ctx: what.join('، ') });
     }
@@ -310,12 +312,78 @@
         </select>
         <button class="btn" type="button" id="pf-bulk">${icon('percent')}<span>زيادة جماعية</span></button>
       </div>
+      ${cleanupBanner()}
       <div class="stack" id="zone-editors"></div>`;
 
+    bindCleanupBanner(root);
     $('#pf-q').addEventListener('input', debounce((e) => { S.filter.q = e.target.value.trim(); renderZoneEditors(); }, 150));
     $('#pf-s').addEventListener('change', (e) => { S.filter.section = e.target.value; renderZoneEditors(); });
     $('#pf-bulk').addEventListener('click', () => bulkDialog());
     renderZoneEditors();
+  }
+
+  // ---------------- professional naming tool ----------------
+  function cleanupBanner() {
+    if (!window.FaresCleanup) return '';
+    const n = FaresCleanup.suggest(S.draft).length;
+    if (!n) return '';
+    return `
+      <div class="callout" id="cleanup-callout">
+        <span class="callout-icon">${icon('edit')}</span>
+        <div class="callout-text">
+          <strong>تنسيق الأسماء بشكل احترافي</strong>
+          <span>يوجد <b class="num">${n}</b> اقتراحاً: تصحيح الإملاء والهمزات، حذف المكرر، ونقل التوضيحات مثل «حتى الكيلو 60» إلى ملاحظة منفصلة تحت اسم الوجهة.</span>
+        </div>
+        <button class="btn btn-brass" type="button" data-cleanup>${icon('eye')} مراجعة الاقتراحات</button>
+      </div>`;
+  }
+
+  function bindCleanupBanner(root) {
+    const b = $('[data-cleanup]', root);
+    if (b) b.addEventListener('click', cleanupDialog);
+  }
+
+  function cleanupDialog() {
+    const changes = FaresCleanup.suggest(S.draft);
+    if (!changes.length) return toast('كل الأسماء منسّقة بالفعل');
+    const secName = (id) => (S.draft.sections.find((s) => s.id === id) || {}).name || '';
+    const item = (c) => {
+      const nameChanged = c.from.name !== c.to.name;
+      const noteChanged = c.from.note !== c.to.note;
+      return `<li>
+        <span class="kind ${c.type === 'section' ? 'add' : 'mod'}">${c.type === 'section' ? 'منطقة' : 'وجهة'}</span>
+        <div>
+          ${c.type === 'route' ? `<span class="ctx">${esc(secName(c.sectionId))}</span><br>` : ''}
+          ${nameChanged ? `<span class="old">${esc(c.from.name)}</span><br><span class="new">${esc(c.to.name)}</span>` : `<span>${esc(c.to.name)}</span>`}
+          ${noteChanged && c.to.note ? `<br><span class="note-add">${icon('plus')} ملاحظة: ${esc(c.to.note)}</span>` : ''}
+        </div>
+      </li>`;
+    };
+    const dlg = document.createElement('dialog');
+    dlg.className = 'modal wide';
+    dlg.innerHTML = `
+      <form method="dialog">
+        <div class="modal-body">
+          <h2>مراجعة تنسيق الأسماء</h2>
+          <p>تُطبَّق الاقتراحات على المسودة فقط، والأسعار لا تتغير. بعد التطبيق راجع الجدول ثم اضغط «مراجعة ونشر».</p>
+          <ul class="change-list cleanup-list">${changes.map(item).join('')}</ul>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-brass" value="ok">${icon('check')} تطبيق ${changes.length} اقتراحاً على المسودة</button>
+          <button class="btn btn-ghost" value="cancel">إلغاء</button>
+        </div>
+      </form>`;
+    document.body.appendChild(dlg);
+    dlg.addEventListener('close', () => {
+      if (dlg.returnValue === 'ok') {
+        FaresCleanup.apply(S.draft, changes);
+        refreshStatus();
+        render();
+        toast(`تم تنسيق ${changes.length} اسماً — راجع ثم انشر`);
+      }
+      dlg.remove();
+    });
+    dlg.showModal();
   }
 
   function renderZoneEditors(focusKey) {
@@ -332,7 +400,7 @@
       const head = `
         <thead>
           <tr class="vrow"><th></th>${d.vehicles.map((v) => `<th colspan="${nF}" class="v-start">${esc(v.name)}</th>`).join('')}<th></th></tr>
-          <tr><th class="th-name">الوجهة</th>${d.vehicles.map(() => d.fareTypes.map((f, i) => `<th class="${i === 0 ? 'v-start' : ''}">${esc(f.name)}</th>`).join('')).join('')}<th><span class="sr-only">إجراءات</span></th></tr>
+          <tr><th class="th-name">الوجهة</th>${d.vehicles.map(() => d.fareTypes.map((f, i) => `<th class="th-fare f-${i} ${i === 0 ? 'v-start' : ''}"><span class="fare-chip">${esc(f.name)}</span></th>`).join('')).join('')}<th><span class="sr-only">إجراءات</span></th></tr>
         </thead>`;
       const body = rows.map((r) => {
         const o = serverRoutes.get(r.id);
@@ -341,12 +409,12 @@
           if (r.kind === 'flat') {
             const val = r.prices?.[v.id]?.[d.fareTypes[0].id] ?? null;
             const was = o?.prices?.[v.id]?.[d.fareTypes[0].id] ?? null;
-            return `<td class="flat-cell v-start" colspan="${nF}">${priceInput(r.id, v.id, d.fareTypes[0].id, val, o ? was : undefined)}<span class="flat-note">سعر ثابت</span></td>`;
+            return `<td class="flat-cell pcell f-0 v-start" colspan="${nF}">${priceInput(r.id, v.id, d.fareTypes[0].id, val, o ? was : undefined)}<span class="flat-note">سعر ثابت</span></td>`;
           }
           return d.fareTypes.map((f, i) => {
             const val = r.prices?.[v.id]?.[f.id] ?? null;
             const was = o?.prices?.[v.id]?.[f.id] ?? null;
-            return `<td class="${i === 0 ? 'v-start' : ''}">${priceInput(r.id, v.id, f.id, val, o ? was : undefined)}</td>`;
+            return `<td class="pcell f-${i} ${i === 0 ? 'v-start' : ''}">${priceInput(r.id, v.id, f.id, val, o ? was : undefined)}</td>`;
           }).join('');
         }).join('');
         return `
@@ -354,6 +422,8 @@
             <td class="name-cell">
               <label class="sr-only" for="n-${esc(r.id)}">اسم الوجهة</label>
               <textarea class="cell-input name-input ${nameChanged ? 'changed' : ''}" id="n-${esc(r.id)}" rows="1" data-name="${esc(r.id)}" ${nameChanged ? `title="كان: ${esc(o.name)}"` : ''}>${esc(r.name)}</textarea>
+              <label class="sr-only" for="nt-${esc(r.id)}">ملاحظة الوجهة</label>
+              <input class="cell-input note-input ${o && (o.note || '') !== (r.note || '') ? 'changed' : ''}" id="nt-${esc(r.id)}" data-note="${esc(r.id)}" value="${esc(r.note || '')}" placeholder="+ ملاحظة (مثل: حتى الكيلو 60)" maxlength="200">
               ${r.kind === 'flat' ? '<span class="kind-pill">باقة بسعر ثابت</span>' : ''}
             </td>
             ${cells}
@@ -419,6 +489,14 @@
           t.classList.toggle('changed', was !== p.value);
           t.title = was !== p.value ? `كان: ${was == null ? 'غير متاح' : fmt(was)}` : '';
         }
+        refreshStatusSoon();
+      } else if (t.matches('.note-input')) {
+        const r = findRoute(t.dataset.note);
+        if (!r) return;
+        const v = t.value.trim();
+        if (v) r.note = v; else delete r.note;
+        const o = S.server.routes.find((x) => x.id === r.id);
+        if (o) t.classList.toggle('changed', (o.note || '') !== (r.note || ''));
         refreshStatusSoon();
       } else if (t.matches('.name-input')) {
         const r = findRoute(t.dataset.name);
@@ -503,6 +581,9 @@
           <div class="field"><label for="rd-name">اسم الوجهة</label>
             <textarea class="textarea" id="rd-name" rows="2">${esc(r.name)}</textarea>
             <span class="hint">افصل بين المناطق بشرطة « - » لتظهر كعناصر منفصلة.</span></div>
+          <div class="field"><label for="rd-note">ملاحظة توضيحية</label>
+            <input class="input" id="rd-note" value="${esc(r.note || '')}" maxlength="200" placeholder="مثل: حتى الكيلو 60، قبل الجامعة الأمريكية">
+            <span class="hint">تظهر بخط أصغر تحت اسم الوجهة.</span></div>
           <div class="field"><label for="rd-sec">المنطقة</label>
             <select class="select" id="rd-sec">${d.sections.map((s) => `<option value="${esc(s.id)}" ${s.id === r.sectionId ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></div>
           <div class="field"><label for="rd-kind">طريقة التسعير</label>
@@ -523,10 +604,12 @@
       const v = dlg.returnValue;
       const name = $('#rd-name', dlg).value.replace(/\s*\n\s*/g, ' ').trim();
       const sec = $('#rd-sec', dlg).value;
+      const note = $('#rd-note', dlg).value.trim();
       const kind = $('#rd-kind', dlg).value;
       dlg.remove();
       if (v === 'save') {
         r.name = name;
+        if (note) r.note = note; else delete r.note;
         if (r.sectionId !== sec) {
           // move to the end of the new section
           S.draft.routes.splice(S.draft.routes.indexOf(r), 1);
@@ -641,6 +724,7 @@
     const d = S.draft;
     const count = (id) => d.routes.filter((r) => r.sectionId === id).length;
     root.innerHTML = `
+      ${cleanupBanner()}
       <section class="panel">
         <div class="panel-head"><h2>المناطق (${d.sections.length})</h2><p>الترتيب هنا هو ترتيب الظهور في صفحة الأسعار.</p></div>
         <ol class="list-editor" id="zone-list">
@@ -665,6 +749,7 @@
         <div class="panel-foot"><button class="btn" type="button" id="add-zone">${icon('plus')} إضافة منطقة</button></div>
       </section>`;
 
+    bindCleanupBanner(root);
     $('#zone-list').addEventListener('input', (e) => {
       const li = e.target.closest('[data-sid]');
       const s = d.sections.find((x) => x.id === li.dataset.sid);
@@ -907,6 +992,11 @@
           </section>
 
           <section class="panel">
+            <div class="panel-head"><h2>تمييز أنواع الأسعار</h2><p>لون هادئ لكل عمود — ${S.draft.fareTypes.map((f) => esc(f.name)).join('، ')} — حتى يلتقط السائق السعر الصحيح بنظرة.</p></div>
+            <div class="panel-body stack" id="ap-fares"></div>
+          </section>
+
+          <section class="panel">
             <div class="panel-head"><h2>الخطوط</h2><p>كل الخطوط مضمّنة في الموقع وتعمل بدون إنترنت.</p></div>
             <div class="panel-body stack" id="ap-fonts"></div>
           </section>
@@ -939,6 +1029,7 @@
 
     paintPresets();
     paintColors();
+    paintFares();
     paintFonts();
     paintLayout();
     fitPreview();
@@ -953,8 +1044,9 @@
         preset: p.id, light: { ...p.light }, dark: { ...p.dark },
         fontText: p.fontText, fontDisplay: p.fontDisplay, fontNumbers: p.fontNumbers,
         radius: p.radius, scale: p.scale || t.scale,
+        fareColors: { ...t.fareColors, mode: t.fareColors.mode === 'custom' ? 'custom' : (p.fareMode || 'tonal') },
       });
-      paintPresets(); paintColors(); paintFonts(); paintLayout();
+      paintPresets(); paintColors(); paintFares(); paintFonts(); paintLayout();
       themeChanged();
       toast(`تم تطبيق قالب «${p.name}» على المسودة`);
     });
@@ -965,6 +1057,7 @@
       APPEAR.mode = b.dataset.mode;
       $$('#ap-mode button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
       paintColors();
+      paintFares();
       sendPreview();
     });
 
@@ -987,6 +1080,27 @@
       t.preset = 'custom';
       paintPresets();
       paintChecks();
+      paintFareSamples();
+      themeChanged();
+    });
+
+    $('#ap-fares').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-fare-mode]');
+      if (!b) return;
+      t.fareColors.mode = b.dataset.fareMode;
+      // Starting a custom palette: seed it from what's currently shown so the change is gentle.
+      if (t.fareColors.mode === 'custom') {
+        const shown = FaresTheme.fareTokens({ ...t, fareColors: { mode: 'multi', custom: [] } }, t.light, false);
+        S.draft.fareTypes.forEach((_, i) => { if (!t.fareColors.custom[i]) t.fareColors.custom[i] = shown[`--f${i}-dot`]; });
+      }
+      paintFares();
+      themeChanged();
+    });
+    $('#ap-fares').addEventListener('input', (e) => {
+      const i = e.target.dataset.fareColor;
+      if (i === undefined) return;
+      t.fareColors.custom[Number(i)] = e.target.value.toLowerCase();
+      paintFareSamples();
       themeChanged();
     });
 
@@ -1086,6 +1200,57 @@
       <li class="checks-head">${bad ? `${icon('alert')} ${bad} ${bad === 1 ? 'تنبيه' : 'تنبيهات'} وضوح — قد يصعب القراءة في ضوء الشمس` : `${icon('check')} كل الألوان واضحة ومقروءة`}</li>
       ${rows.map(([label, r, min]) => `<li class="${r >= min ? 'ok' : 'warn'}">${icon(r >= min ? 'check' : 'alert')}<span>${label}</span><b class="num">${r.toFixed(1)}:1</b><small>المطلوب ${min}:1</small></li>`).join('')}`;
     $('#ap-checks').classList.toggle('has-warn', !!bad);
+  }
+
+  const FARE_MODES = [
+    ['tonal', 'تدرج هادئ', 'درجات متصاعدة من لون التمييز'],
+    ['multi', 'ألوان متعددة', 'لون مختلف وهادئ لكل نوع'],
+    ['custom', 'ألوان أختارها', 'حدد لون كل نوع بنفسك'],
+    ['off', 'بدون تلوين', 'جدول بسيط بلا ألوان'],
+  ];
+
+  function paintFares() {
+    const t = S.draft.theme;
+    const fares = S.draft.fareTypes;
+    $('#ap-fares').innerHTML = `
+      <div class="fare-modes" role="radiogroup" aria-label="طريقة تمييز الأسعار">
+        ${FARE_MODES.map(([v, label, hint]) => `
+          <button type="button" class="fare-mode" role="radio" data-fare-mode="${v}" aria-checked="${t.fareColors.mode === v}">
+            <span class="fm-bars" data-bars="${v}">${fares.slice(0, 3).map((_, i) => `<i class="f-${i}"></i>`).join('')}</span>
+            <strong>${label}</strong><span>${hint}</span>
+          </button>`).join('')}
+      </div>
+      ${t.fareColors.mode === 'custom' ? `
+        <div class="fare-pickers">
+          ${fares.slice(0, 6).map((f, i) => `
+            <label class="fare-picker">
+              <span class="color-swatch"><input type="color" data-fare-color="${i}" value="${t.fareColors.custom[i] || '#888888'}" aria-label="لون ${esc(f.name)}"></span>
+              <span>${esc(f.name)}</span>
+            </label>`).join('')}
+        </div>` : ''}
+      <div class="fare-sample" id="ap-fare-sample" aria-label="معاينة الألوان على صف أسعار">
+        <div class="fs-head">${fares.map((f, i) => `<span class="fare-chip f-${i}">${esc(f.name)}</span>`).join('')}</div>
+        <div class="fs-row">${fares.map((_, i) => `<span class="f-${i} num">${fmt([550, 450, 1100, 700, 900, 1200][i] || 500)}</span>`).join('')}</div>
+      </div>`;
+    paintFareSamples();
+  }
+
+  // The admin UI keeps its own colours, so samples get the draft theme's tokens directly.
+  function paintFareSamples() {
+    const t = S.draft.theme;
+    const dark = APPEAR.mode === 'dark';
+    const pal = dark ? t.dark : t.light;
+    const sample = $('#ap-fare-sample');
+    if (!sample) return;
+    const apply = (el, theme) => {
+      const tk = FaresTheme.fareTokens(theme, pal, dark);
+      Object.entries(tk).forEach(([k, v]) => el.style.setProperty(k, v));
+    };
+    apply(sample, t);
+    sample.style.background = pal.surface;
+    sample.style.color = pal.text;
+    sample.style.borderColor = FaresTheme.mix(pal.surface, pal.text, 0.15);
+    $$('[data-bars]', $('#ap-fares')).forEach((el) => apply(el, { ...t, fareColors: { ...t.fareColors, mode: el.dataset.bars } }));
   }
 
   function paintFonts() {

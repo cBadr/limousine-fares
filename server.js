@@ -37,6 +37,7 @@ function serveStatic(req, res, pathname) {
       ...SECURITY_HEADERS,
       'Content-Type': MIME[ext] || 'application/octet-stream',
       'Content-Length': st.size,
+      'Last-Modified': st.mtime.toUTCString(),
       'Cache-Control': rel.startsWith('/vendor/') ? 'public, max-age=2592000, immutable' : 'no-cache',
     });
     if (req.method === 'HEAD') return res.end();

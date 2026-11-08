@@ -224,6 +224,28 @@ dialog.modal[open] { animation: modal-in 0.22s var(--ease); }
 
 mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1px; }
 
+/* ---------- fare-type colours (set by theme.js, one set per column index) ---------- */
+:root {
+  --f0-bg: #f8f2e6; --f0-dot: #c4a46b; --f0-ink: #7a5a1c;
+  --f1-bg: #f2e8d4; --f1-dot: #a8823f; --f1-ink: #6e5018;
+  --f2-bg: #ead9b8; --f2-dot: #8a6420; --f2-ink: #5c4313;
+  --hover-veil: rgba(0, 0, 0, 0.035);
+}
+.f-0 { --fbg: var(--f0-bg); --fdot: var(--f0-dot); --fink: var(--f0-ink); }
+.f-1 { --fbg: var(--f1-bg); --fdot: var(--f1-dot); --fink: var(--f1-ink); }
+.f-2 { --fbg: var(--f2-bg); --fdot: var(--f2-dot); --fink: var(--f2-ink); }
+.f-3 { --fbg: var(--f3-bg); --fdot: var(--f3-dot); --fink: var(--f3-ink); }
+.f-4 { --fbg: var(--f4-bg); --fdot: var(--f4-dot); --fink: var(--f4-ink); }
+.f-5 { --fbg: var(--f5-bg); --fdot: var(--f5-dot); --fink: var(--f5-ink); }
+.fare-chip {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  color: var(--fink, var(--muted)); font-weight: 700;
+}
+.fare-chip::before {
+  content: ""; width: 0.5rem; height: 0.5rem; flex: none; border-radius: 50%;
+  background: var(--fdot, var(--line-strong));
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }

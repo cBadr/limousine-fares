@@ -26,49 +26,49 @@
   // Each template: light + dark palettes (5 base colours) and a font pairing.
   var PRESETS = [
     {
-      id: 'classic', name: 'كحلي ونحاسي', desc: 'رسمي وهادئ — الطابع الأصلي',
+      id: 'classic', fareMode: 'tonal', name: 'كحلي ونحاسي', desc: 'رسمي وهادئ — الطابع الأصلي',
       light: { primary: '#141d36', accent: '#8a6420', bg: '#f4efe4', surface: '#fffcf5', text: '#131a2b' },
       dark: { primary: '#0a0e19', accent: '#d6aa5c', bg: '#0e1320', surface: '#161d2e', text: '#ece5d6' },
       fontText: 'plex', fontDisplay: 'reem-kufi', fontNumbers: 'same', radius: 'soft',
     },
     {
-      id: 'royal', name: 'أسود ملكي', desc: 'أسود وذهبي لخدمة VIP',
+      id: 'royal', fareMode: 'tonal', name: 'أسود ملكي', desc: 'أسود وذهبي لخدمة VIP',
       light: { primary: '#121212', accent: '#8f6f1f', bg: '#f5f3ee', surface: '#ffffff', text: '#161616' },
       dark: { primary: '#000000', accent: '#d9b44a', bg: '#0a0a0a', surface: '#161616', text: '#f3efe4' },
       fontText: 'tajawal', fontDisplay: 'messiri', fontNumbers: 'same', radius: 'soft',
     },
     {
-      id: 'airport', name: 'أزرق المطار', desc: 'نظيف وواضح مثل لوحات المطارات',
+      id: 'airport', fareMode: 'multi', name: 'أزرق المطار', desc: 'نظيف وواضح مثل لوحات المطارات',
       light: { primary: '#0b4a92', accent: '#b45f06', bg: '#eef3f9', surface: '#ffffff', text: '#0f1e33' },
       dark: { primary: '#082a52', accent: '#f4b740', bg: '#0a1522', surface: '#12233a', text: '#e6eef8' },
       fontText: 'cairo', fontDisplay: 'cairo', fontNumbers: 'inter', radius: 'round',
     },
     {
-      id: 'emerald', name: 'زمردي', desc: 'أخضر داكن مع لمسة ذهبية',
+      id: 'emerald', fareMode: 'tonal', name: 'زمردي', desc: 'أخضر داكن مع لمسة ذهبية',
       light: { primary: '#0f4c3a', accent: '#946020', bg: '#f2f0e8', surface: '#fffdf7', text: '#13241e' },
       dark: { primary: '#072a20', accent: '#e0b062', bg: '#0b1612', surface: '#13221d', text: '#e7efe9' },
       fontText: 'noto-kufi', fontDisplay: 'noto-kufi', fontNumbers: 'same', radius: 'soft',
     },
     {
-      id: 'burgundy', name: 'عنابي', desc: 'دافئ وفخم',
+      id: 'burgundy', fareMode: 'tonal', name: 'عنابي', desc: 'دافئ وفخم',
       light: { primary: '#5a1625', accent: '#9a5f22', bg: '#f6f0ea', surface: '#fffaf5', text: '#2a1418' },
       dark: { primary: '#2a0a11', accent: '#e3a65f', bg: '#160a0d', surface: '#22121a', text: '#f3e7e9' },
       fontText: 'almarai', fontDisplay: 'messiri', fontNumbers: 'same', radius: 'soft',
     },
     {
-      id: 'slate', name: 'رمادي عصري', desc: 'بسيط مع تمييز فيروزي',
+      id: 'slate', fareMode: 'multi', name: 'رمادي عصري', desc: 'بسيط مع تمييز فيروزي',
       light: { primary: '#1f2937', accent: '#0f766e', bg: '#f3f4f6', surface: '#ffffff', text: '#111827' },
       dark: { primary: '#0b1220', accent: '#2dd4bf', bg: '#0f172a', surface: '#1e293b', text: '#e5e7eb' },
       fontText: 'readex', fontDisplay: 'readex', fontNumbers: 'inter', radius: 'round',
     },
     {
-      id: 'desert', name: 'رملي', desc: 'ألوان الصحراء الدافئة',
+      id: 'desert', fareMode: 'tonal', name: 'رملي', desc: 'ألوان الصحراء الدافئة',
       light: { primary: '#5e3219', accent: '#a64a22', bg: '#f5ecdd', surface: '#fffaf1', text: '#2b1d12' },
       dark: { primary: '#2e1a0e', accent: '#ec8f5f', bg: '#18110b', surface: '#261b13', text: '#f4e8d8' },
       fontText: 'changa', fontDisplay: 'changa', fontNumbers: 'same', radius: 'sharp',
     },
     {
-      id: 'contrast', name: 'تباين عالٍ', desc: 'أوضح قراءة تحت الشمس وللنظر الضعيف',
+      id: 'contrast', fareMode: 'multi', name: 'تباين عالٍ', desc: 'أوضح قراءة تحت الشمس وللنظر الضعيف',
       light: { primary: '#000000', accent: '#b23c00', bg: '#ffffff', surface: '#ffffff', text: '#000000' },
       dark: { primary: '#000000', accent: '#ffd400', bg: '#000000', surface: '#0f0f0f', text: '#ffffff' },
       fontText: 'cairo', fontDisplay: 'cairo', fontNumbers: 'oswald', radius: 'sharp', scale: 112,
@@ -88,7 +88,15 @@
     mode: 'auto', // auto | light | dark  (visitor can still switch)
     header: 'compact', // compact | full
     sections: 'first', // collapsed | first | expanded
+    fareColors: { mode: 'tonal', custom: [] }, // tonal | multi | custom | off
   };
+
+  // Soft, distinguishable hues for "multi" mode (light / dark variants).
+  var MULTI = {
+    light: ['#2d6cb5', '#2e8b57', '#b7791f', '#8b5cb8', '#c0533a', '#23898f'],
+    dark: ['#6aa6ea', '#5cc98e', '#e2b04f', '#b991e6', '#ec8a72', '#5cc4c9'],
+  };
+  var MAX_FARES = 6;
 
   var HEX = /^#[0-9a-f]{6}$/i;
   var KEYS = ['primary', 'accent', 'bg', 'surface', 'text'];
@@ -118,6 +126,11 @@
       mode: pick(t.mode, ['auto', 'light', 'dark'], DEFAULT.mode),
       header: pick(t.header, ['compact', 'full'], DEFAULT.header),
       sections: pick(t.sections, ['collapsed', 'first', 'expanded'], DEFAULT.sections),
+      fareColors: {
+        mode: pick(t.fareColors && t.fareColors.mode, ['tonal', 'multi', 'custom', 'off'], DEFAULT.fareColors.mode),
+        custom: (t.fareColors && Array.isArray(t.fareColors.custom) ? t.fareColors.custom : [])
+          .slice(0, MAX_FARES).map(function (c) { return HEX.test(c || '') ? c.toLowerCase() : null; }),
+      },
     };
   }
 
@@ -174,6 +187,46 @@
     };
   }
 
+  // Pick the closest shade of `color` (moving toward `toward`) that reads well on `bg`.
+  function readable(color, bg, toward, min) {
+    for (var k = 0; k <= 1.0001; k += 0.1) {
+      var c = mix(color, toward, k);
+      if (contrast(c, bg) >= (min || 4.5)) return c;
+    }
+    return toward;
+  }
+
+  // Per fare-type column colours: a background tint, a readable label colour and a marker dot.
+  // "tonal" builds a calm gradient from the accent colour: first column lightest, last strongest.
+  function fareTokens(t, p, dark) {
+    var out = {};
+    var mode = t.fareColors.mode;
+    var tonalBg = dark ? [0.1, 0.18, 0.28, 0.14, 0.22, 0.32] : [0.06, 0.12, 0.2, 0.09, 0.16, 0.24];
+    var tonalDot = [0.55, 0.28, 0, 0.42, 0.15, 0.05];
+    for (var i = 0; i < MAX_FARES; i++) {
+      var bg, dot, ink;
+      if (mode === 'off') {
+        bg = 'transparent';
+        dot = mix(p.surface, p.text, 0.3);
+        ink = mix(p.text, p.surface, 0.38);
+      } else if (mode === 'tonal') {
+        bg = mix(p.surface, p.accent, tonalBg[i]);
+        dot = mix(p.accent, p.surface, tonalDot[i]);
+        ink = readable(p.accent, bg, p.text);
+      } else {
+        var base = (mode === 'custom' && t.fareColors.custom[i]) || MULTI[dark ? 'dark' : 'light'][i];
+        bg = mix(p.surface, base, dark ? 0.2 : 0.12);
+        dot = base;
+        ink = readable(base, bg, p.text);
+      }
+      out['--f' + i + '-bg'] = bg;
+      out['--f' + i + '-dot'] = dot;
+      out['--f' + i + '-ink'] = ink;
+    }
+    out['--hover-veil'] = dark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.035)';
+    return out;
+  }
+
   var RADII = { sharp: ['5px', '4px'], soft: ['14px', '9px'], round: ['22px', '14px'] };
 
   function font(id) {
@@ -201,9 +254,13 @@
     var root = opts.root || document.documentElement;
     var mode = resolveMode(t, opts);
     var dark = mode === 'dark';
-    var tk = tokens(dark ? t.dark : t.light, dark);
+    var pal = dark ? t.dark : t.light;
+    var tk = tokens(pal, dark);
+    var ft = fareTokens(t, pal, dark);
     root.setAttribute('data-theme', mode);
     for (var k in tk) root.style.setProperty(k, tk[k]);
+    for (var f in ft) root.style.setProperty(f, ft[f]);
+    root.setAttribute('data-fares', t.fareColors.mode);
 
     var text = font(t.fontText);
     var display = t.fontDisplay === 'same' ? text : font(t.fontDisplay);
@@ -233,7 +290,7 @@
 
   var api = {
     FONTS: FONTS, PRESETS: PRESETS, DEFAULT: DEFAULT,
-    normalize: normalize, apply: apply, cache: cache, tokens: tokens,
+    normalize: normalize, apply: apply, cache: cache, tokens: tokens, fareTokens: fareTokens, MULTI: MULTI,
     contrast: contrast, onColor: onColor, mix: mix, font: font,
     current: normalize(null), mode: 'light',
   };

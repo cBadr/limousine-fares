@@ -1,6 +1,6 @@
 /* global Fares, FaresTheme, XLSX */
 (() => {
-  const { normalize, escapeHtml: esc, highlight, fmt, formatDate, formatDateTime, api, icon, toast, bindThemeButton, download, debounce } = Fares;
+  const { normalize, escapeHtml: esc, highlight, fmt, digits, formatDate, formatDateTime, api, icon, toast, bindThemeButton, download, debounce } = Fares;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const PREVIEW = new URLSearchParams(location.search).has('preview');
@@ -43,7 +43,7 @@
 
   function matches(route, section) {
     if (!state.q) return true;
-    const hay = normalize(`${route.name} ${section.name}`);
+    const hay = normalize(`${route.name} ${route.note || ''} ${section.name}`);
     return normalize(state.q).split(' ').every((t) => hay.includes(t));
   }
 
@@ -102,7 +102,7 @@
     const opts = [{ id: 'all', name: 'الكل' }, ...state.data.vehicles];
     if (!opts.some((o) => o.id === state.vehicle)) state.vehicle = 'all';
     $('#vehicle-switch').innerHTML = opts
-      .map((o) => `<button type="button" data-v="${esc(o.id)}" aria-pressed="${o.id === state.vehicle}">${esc(o.name)}</button>`)
+      .map((o) => `<button type="button" data-v="${esc(o.id)}" aria-pressed="${o.id === state.vehicle}">${o.id === 'all' ? '' : vehicleIcon(o)}${esc(o.name)}</button>`)
       .join('');
   }
 
@@ -113,6 +113,17 @@
     const total = sections.reduce((n, s) => n + count(s), 0);
     const chip = (id, name, n) => `<button type="button" class="chip${n ? '' : ' is-empty'}" data-s="${esc(id)}" aria-pressed="${state.section === id}">${esc(name)}<span class="chip-count num">${fmt(n)}</span></button>`;
     $('#chips').innerHTML = chip('all', 'كل المناطق', total) + sections.map((s) => chip(s.id, s.name, count(s))).join('');
+    updateChipHints();
+  }
+
+  // Phones show areas in one swipeable row: fade + arrow hints show there's more on either side.
+  function updateChipHints() {
+    const row = $('#chips');
+    const wrap = row.parentElement;
+    const max = row.scrollWidth - row.clientWidth;
+    const pos = Math.abs(row.scrollLeft); // RTL scrollLeft is 0 at the start and negative toward the end
+    wrap.classList.toggle('more-start', max > 4 && pos > 4);
+    wrap.classList.toggle('more-end', max > 4 && pos < max - 4);
   }
 
   // ---------- accordion state ----------
@@ -161,7 +172,7 @@
     const cols = `
       <div class="cols" aria-hidden="true">
         <span class="c-dest">الوجهة</span>
-        ${vehicles.map((v) => `<span class="c-veh"><span class="c-vname">${vehicleIcon(v)}${esc(v.name)}</span>${fareTypes.map((f) => `<span>${esc(f.name)}</span>`).join('')}</span>`).join('')}
+        ${vehicles.map((v) => `<span class="c-veh"><span class="c-vname">${vehicleIcon(v)}${esc(v.name)}</span>${fareTypes.map((f, fi) => `<span class="c-fare fare-chip f-${fi}">${esc(f.name)}</span>`).join('')}</span>`).join('')}
         <span class="c-go"></span>
       </div>`;
 
@@ -171,7 +182,8 @@
       const meta = `<span class="num">${fmt(rows.length)}</span> ${plural(rows.length, 'وجهة', 'وجهات', 'وجهة')}`
         + (range ? ` · من <span class="num">${fmt(range[0])}</span>${range[1] !== range[0] ? ` إلى <span class="num">${fmt(range[1])}</span>` : ''} ${esc(settings.currency)}` : '');
       const items = rows.map((r) => {
-        const dest = `<span class="place-wrap">${places(r.name).map((p) => `<span class="place${p.length > 22 ? ' long' : ''}">${highlight(p, state.q)}</span>`).join(' ')}</span>`;
+        const dest = `<span class="place-wrap">${places(r.name).map((p) => `<span class="place${p.length > 22 ? ' long' : ''}">${highlight(digits(p), state.q)}</span>`).join(' ')}${r.kind === 'flat' ? '<span class="flat-badge">باقة</span>' : ''}</span>`
+          + (r.note ? `<span class="fr-note">${icon('info')}<span>${highlight(digits(r.note), state.q)}</span></span>` : '');
         const label = [r.name];
         const vcells = vehicles.map((v) => {
           const pr = r.prices[v.id] || {};
@@ -179,15 +191,15 @@
           if (r.kind === 'flat') {
             const val = pr[fareTypes[0].id];
             label.push(`${v.name}: ${val == null ? 'غير متاح' : `${fmt(val)} سعر ثابت`}`);
-            return `<span class="fr-veh">${vl}<span class="fr-flat num">${val == null ? '—' : `<small>سعر ثابت</small>${fmt(val)}`}</span></span>`;
+            return `<span class="fr-veh">${vl}<span class="fr-flat num f-0">${val == null ? '—' : `<small>سعر ثابت</small>${fmt(val)}`}</span></span>`;
           }
           label.push(`${v.name}: ${fareTypes.map((f) => `${f.name} ${pr[f.id] == null ? 'غير متاح' : fmt(pr[f.id])}`).join('، ')}`);
-          return `<span class="fr-veh">${vl}${fareTypes.map((f) => (pr[f.id] == null
-            ? '<span class="fr-p na">—</span>'
-            : `<span class="fr-p num">${fmt(pr[f.id])}</span>`)).join('')}</span>`;
+          return `<span class="fr-veh">${vl}${fareTypes.map((f, fi) => (pr[f.id] == null
+            ? `<span class="fr-p na f-${fi}">—</span>`
+            : `<span class="fr-p num f-${fi}">${fmt(pr[f.id])}</span>`)).join('')}</span>`;
         }).join('');
         return `<li><button type="button" class="fare-row" data-rid="${esc(r.id)}" aria-label="${esc(label.join('. '))}" aria-haspopup="dialog">
-          <span class="fr-name">${dest}${r.kind === 'flat' ? '<span class="flat-badge">باقة</span>' : ''}</span>
+          <span class="fr-name">${dest}</span>
           ${vcells}
           <span class="fr-go" aria-hidden="true">${icon('chevronDown')}</span>
         </button></li>`;
@@ -264,7 +276,7 @@
   function quoteText(route) {
     const { sections, fareTypes, settings } = state.data;
     const sec = sections.find((s) => s.id === route.sectionId);
-    const lines = [`${sec ? sec.name : ''} — ${route.name}`];
+    const lines = [`${sec ? sec.name : ''} — ${route.name}${route.note ? ` (${route.note})` : ''}`];
     for (const v of visibleVehicles()) {
       const pr = route.prices[v.id] || {};
       if (route.kind === 'flat') {
@@ -307,8 +319,8 @@
     const cards = vehicles.map((v) => {
       const pr = r.prices[v.id] || {};
       const cells = r.kind === 'flat'
-        ? `<div><dt>سعر ثابت</dt><dd class="num ${pr[fareTypes[0].id] == null ? 'na' : ''}">${pr[fareTypes[0].id] == null ? '—' : fmt(pr[fareTypes[0].id])}</dd></div>`
-        : fareTypes.map((f) => `<div><dt>${esc(f.name)}</dt><dd class="num ${pr[f.id] == null ? 'na' : ''}">${pr[f.id] == null ? '—' : fmt(pr[f.id])}</dd></div>`).join('');
+        ? `<div class="f-0"><dt class="fare-chip">سعر ثابت</dt><dd class="num ${pr[fareTypes[0].id] == null ? 'na' : ''}">${pr[fareTypes[0].id] == null ? '—' : fmt(pr[fareTypes[0].id])}</dd></div>`
+        : fareTypes.map((f, fi) => `<div class="f-${fi}"><dt class="fare-chip">${esc(f.name)}</dt><dd class="num ${pr[f.id] == null ? 'na' : ''}">${pr[f.id] == null ? '—' : fmt(pr[f.id])}</dd></div>`).join('');
       return `<section class="veh-card ${state.vehicle === v.id ? 'is-pref' : ''}">
         <h3>${vehicleIcon(v)}${esc(v.name)}</h3>
         <dl class="${r.kind === 'flat' ? 'one' : ''}">${cells}</dl>
@@ -319,7 +331,8 @@
       <header class="sheet-head">
         <span class="sheet-zone">${icon(zoneIcon(sec ? sec.name : ''))}${esc(sec ? sec.name : '')}</span>
         <h2 id="sheet-title">${esc(r.kind === 'flat' || ps.length < 2 ? r.name : ps.slice(0, 2).join(' - ') + (ps.length > 2 ? '…' : ''))}</h2>
-        ${r.kind !== 'flat' && ps.length > 1 ? `<div class="sheet-places">${ps.map((p) => `<span>${esc(p)}</span>`).join('')}</div>` : ''}
+        ${r.note ? `<p class="sheet-note-line">${icon('info')}<span>${esc(digits(r.note))}</span></p>` : ''}
+        ${r.kind !== 'flat' && ps.length > 1 ? `<div class="sheet-places">${ps.map((p) => `<span>${esc(digits(p))}</span>`).join('')}</div>` : ''}
         <button class="icon-btn sheet-close" type="button" data-close aria-label="إغلاق">${icon('x')}</button>
       </header>
       <div class="sheet-body">${cards}</div>
@@ -359,13 +372,13 @@
   function exportRows() {
     const { fareTypes, settings } = state.data;
     const vehicles = visibleVehicles();
-    const header1 = ['المنطقة', 'الوجهة', 'النوع'];
-    const header2 = ['', '', ''];
+    const header1 = ['المنطقة', 'الوجهة', 'ملاحظة', 'النوع'];
+    const header2 = ['', '', '', ''];
     for (const v of vehicles) fareTypes.forEach((f, i) => { header1.push(i === 0 ? v.name : ''); header2.push(f.name); });
     const rows = [];
     for (const { section, rows: rs } of groups()) {
       for (const r of rs) {
-        const row = [section.name, r.name, r.kind === 'flat' ? 'سعر ثابت' : 'توصيل'];
+        const row = [section.name, r.name, r.note || '', r.kind === 'flat' ? 'سعر ثابت' : 'توصيل'];
         for (const v of vehicles) {
           const pr = r.prices[v.id] || {};
           fareTypes.forEach((f, i) => {
@@ -387,7 +400,7 @@
   function exportCsv() {
     const { header2, rows, vehicles } = exportRows();
     const nF = state.data.fareTypes.length;
-    const head = header2.map((h, i) => (i < 3 ? ['المنطقة', 'الوجهة', 'النوع'][i] : `${vehicles[Math.floor((i - 3) / nF)].name} - ${h}`));
+    const head = header2.map((h, i) => (i < 4 ? ['المنطقة', 'الوجهة', 'ملاحظة', 'النوع'][i] : `${vehicles[Math.floor((i - 4) / nF)].name} - ${h}`));
     const escCsv = (v) => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
     const csv = [head, ...rows].map((r) => r.map(escCsv).join(',')).join('\r\n');
     download(`${fileBase()}.csv`, new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
@@ -406,12 +419,12 @@
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     const nF = state.data.fareTypes.length;
     const merges = [{ s: { r: 0, c: 0 }, e: { r: 0, c: header1.length - 1 } }];
-    for (let c = 3; c < header1.length; c += nF) merges.push({ s: { r: 2, c }, e: { r: 2, c: c + nF - 1 } });
-    for (let c = 0; c < 3; c++) merges.push({ s: { r: 2, c }, e: { r: 3, c } });
+    for (let c = 4; c < header1.length; c += nF) merges.push({ s: { r: 2, c }, e: { r: 2, c: c + nF - 1 } });
+    for (let c = 0; c < 4; c++) merges.push({ s: { r: 2, c }, e: { r: 3, c } });
     const notesStart = 4 + rows.length + 2;
     state.data.notes.forEach((_, i) => merges.push({ s: { r: notesStart + i, c: 0 }, e: { r: notesStart + i, c: header1.length - 1 } }));
     ws['!merges'] = merges;
-    ws['!cols'] = [{ wch: 18 }, { wch: 60 }, { wch: 10 }, ...header1.slice(3).map(() => ({ wch: 12 }))];
+    ws['!cols'] = [{ wch: 18 }, { wch: 60 }, { wch: 30 }, { wch: 10 }, ...header1.slice(4).map(() => ({ wch: 12 }))];
     const wb = XLSX.utils.book_new();
     wb.Workbook = { Views: [{ RTL: true }] };
     XLSX.utils.book_append_sheet(wb, ws, 'قائمة الأسعار');
@@ -489,7 +502,19 @@
       renderAll();
     });
 
-    $('#chips').addEventListener('click', (e) => {
+    const chipsRow = $('#chips');
+    chipsRow.addEventListener('scroll', updateChipHints, { passive: true });
+    new ResizeObserver(updateChipHints).observe(chipsRow);
+    $$('.chips-nav').forEach((b) => {
+      b.innerHTML = icon('chevronDown');
+      b.addEventListener('click', () => {
+        // In RTL, moving toward the end means a negative horizontal offset.
+        const dir = b.classList.contains('next') ? -1 : 1;
+        chipsRow.scrollBy({ left: dir * chipsRow.clientWidth * 0.7, behavior: 'smooth' });
+      });
+    });
+
+    chipsRow.addEventListener('click', (e) => {
       const b = e.target.closest('.chip');
       if (!b) return;
       state.section = state.section === b.dataset.s ? 'all' : b.dataset.s;
