@@ -1,22 +1,9 @@
 /* ==========================================================================
-   Shared foundation — tokens, fonts, controls.
-   Concept: a well-kept printed fare card. Ivory paper, ink navy, brass detail.
+   Shared foundation — tokens, controls.
+   Colour and font tokens below are defaults; theme.js overrides them at runtime
+   from the theme chosen in the admin dashboard. Text sizes are in rem so the
+   size control (admin scale × visitor zoom) scales the whole interface.
    ========================================================================== */
-
-@font-face { font-family: "Plex Arabic"; font-weight: 300; font-display: swap; src: url("/vendor/fonts/ibm-plex-sans-arabic-arabic-300-normal.woff2") format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF; }
-@font-face { font-family: "Plex Arabic"; font-weight: 400; font-display: swap; src: url("/vendor/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2") format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF; }
-@font-face { font-family: "Plex Arabic"; font-weight: 500; font-display: swap; src: url("/vendor/fonts/ibm-plex-sans-arabic-arabic-500-normal.woff2") format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF; }
-@font-face { font-family: "Plex Arabic"; font-weight: 600; font-display: swap; src: url("/vendor/fonts/ibm-plex-sans-arabic-arabic-600-normal.woff2") format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF; }
-@font-face { font-family: "Plex Arabic"; font-weight: 700; font-display: swap; src: url("/vendor/fonts/ibm-plex-sans-arabic-arabic-700-normal.woff2") format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF; }
-@font-face { font-family: "Plex Arabic"; font-weight: 300; font-display: swap; src: url("/vendor/fonts/ibm-plex-sans-arabic-latin-300-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+20AC; }
-@font-face { font-family: "Plex Arabic"; font-weight: 400; font-display: swap; src: url("/vendor/fonts/ibm-plex-sans-arabic-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+20AC; }
-@font-face { font-family: "Plex Arabic"; font-weight: 500; font-display: swap; src: url("/vendor/fonts/ibm-plex-sans-arabic-latin-500-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+20AC; }
-@font-face { font-family: "Plex Arabic"; font-weight: 600; font-display: swap; src: url("/vendor/fonts/ibm-plex-sans-arabic-latin-600-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+20AC; }
-@font-face { font-family: "Plex Arabic"; font-weight: 700; font-display: swap; src: url("/vendor/fonts/ibm-plex-sans-arabic-latin-700-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+20AC; }
-@font-face { font-family: "Reem Kufi"; font-weight: 500; font-display: swap; src: url("/vendor/fonts/reem-kufi-arabic-500-normal.woff2") format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF; }
-@font-face { font-family: "Reem Kufi"; font-weight: 700; font-display: swap; src: url("/vendor/fonts/reem-kufi-arabic-700-normal.woff2") format("woff2"); unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF; }
-@font-face { font-family: "Reem Kufi"; font-weight: 500; font-display: swap; src: url("/vendor/fonts/reem-kufi-latin-500-normal.woff2") format("woff2"); unicode-range: U+0000-00FF; }
-@font-face { font-family: "Reem Kufi"; font-weight: 700; font-display: swap; src: url("/vendor/fonts/reem-kufi-latin-700-normal.woff2") format("woff2"); unicode-range: U+0000-00FF; }
 
 :root {
   color-scheme: light;
@@ -32,21 +19,26 @@
   --band: #141d36;
   --band-ink: #f4efe4;
   --band-muted: #aab0c2;
+  --band-accent: #c1953f;
   --brass: #8a6420;
-  --brass-bright: #c1953f;
+  --brass-bright: #8a6420;
   --brass-soft: #efe3c6;
+  --on-brass: #ffffff;
   --focus: #2b58b0;
+  --mark: #f5dc95;
+  --row-hover: #f6efe0;
   --danger: #a1362a;
   --danger-soft: #f6e1dc;
   --ok: #2d6a4c;
   --ok-soft: #dcefe4;
-  --mark: #f5dc95;
   --shadow-sm: 0 1px 0 rgba(19, 26, 43, 0.04), 0 1px 3px rgba(19, 26, 43, 0.06);
   --shadow-md: 0 1px 0 rgba(19, 26, 43, 0.04), 0 10px 30px -12px rgba(19, 26, 43, 0.22);
+  --shadow-lg: 0 -10px 40px -10px rgba(10, 14, 25, 0.35);
   --radius: 14px;
   --radius-sm: 9px;
   --font: "Plex Arabic", "Segoe UI", Tahoma, sans-serif;
   --font-display: "Reem Kufi", "Plex Arabic", "Segoe UI", sans-serif;
+  --font-num: var(--font);
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
@@ -67,30 +59,34 @@
   --brass: #d6aa5c;
   --brass-bright: #e2bb72;
   --brass-soft: #33291a;
+  --on-brass: #1a1206;
   --focus: #7ea6ff;
+  --mark: #6b5420;
+  --row-hover: #1d2538;
   --danger: #ef8a7c;
   --danger-soft: #3a1f1d;
   --ok: #7fcaa2;
   --ok-soft: #173126;
-  --mark: #6b5420;
   --shadow-sm: 0 1px 0 rgba(0, 0, 0, 0.2);
   --shadow-md: 0 14px 34px -14px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 -10px 40px -8px rgba(0, 0, 0, 0.7);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 150px; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 body {
   margin: 0;
   font-family: var(--font);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.6;
   color: var(--ink);
   background: var(--paper);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
 }
 
 h1, h2, h3, h4 { margin: 0; line-height: 1.25; }
@@ -99,7 +95,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 a { color: inherit; }
 svg { flex: none; }
 
-.num { font-variant-numeric: tabular-nums lining-nums; font-feature-settings: "tnum" 1, "lnum" 1; }
+.num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -122,47 +122,47 @@ svg { flex: none; }
   min-height: 44px; padding: 0 16px;
   border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
   background: var(--card); color: var(--ink);
-  font-weight: 500; font-size: 15px; white-space: nowrap;
+  font-weight: 500; font-size: 0.9375rem; white-space: nowrap;
   cursor: pointer; text-decoration: none;
   transition: background-color 0.15s var(--ease), border-color 0.15s var(--ease), transform 0.1s var(--ease), color 0.15s;
 }
 .btn:hover { background: var(--card-2); border-color: var(--ink-2); }
 .btn:active { transform: translateY(1px); }
 .btn[disabled] { opacity: 0.45; cursor: not-allowed; transform: none; }
-.btn svg { width: 18px; height: 18px; }
+.btn svg { width: 1.125rem; height: 1.125rem; }
 
 .btn-primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
 .btn-primary:hover { background: var(--ink-2); border-color: var(--ink-2); }
-.btn-brass { background: var(--brass); border-color: var(--brass); color: #fff; }
-:root[data-theme="dark"] .btn-brass { color: #1a1206; }
-.btn-brass:hover { background: var(--brass-bright); border-color: var(--brass-bright); }
+.btn-brass { background: var(--brass); border-color: var(--brass); color: var(--on-brass); }
+.btn-brass:hover { background: var(--brass-bright); border-color: var(--brass-bright); filter: brightness(1.06); }
 .btn-ghost { background: transparent; border-color: transparent; }
 .btn-ghost:hover { background: var(--paper-2); border-color: transparent; }
 .btn-danger { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); background: transparent; }
 .btn-danger:hover { background: var(--danger-soft); border-color: var(--danger); }
-.btn-sm { min-height: 36px; padding: 0 12px; font-size: 14px; }
+.btn-sm { min-height: 36px; padding: 0 12px; font-size: 0.875rem; }
 
 .icon-btn {
   display: inline-grid; place-items: center;
-  width: 40px; height: 40px; padding: 0;
+  width: 44px; height: 44px; padding: 0;
   border: 1px solid transparent; border-radius: var(--radius-sm);
   background: transparent; color: var(--muted); cursor: pointer;
   transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 }
 .icon-btn:hover { background: var(--paper-2); color: var(--ink); }
-.icon-btn svg { width: 18px; height: 18px; }
+.icon-btn svg { width: 1.25rem; height: 1.25rem; }
 .icon-btn.danger:hover { background: var(--danger-soft); color: var(--danger); }
+.icon-btn[disabled] { opacity: 0.35; cursor: not-allowed; }
 
 /* ---------- inputs ---------- */
 
 .field { display: grid; gap: 6px; }
-.field > label, .field-label { font-size: 14px; font-weight: 600; color: var(--ink-2); }
-.field .hint { font-size: 13px; color: var(--muted); }
+.field > label, .field-label { font-size: 0.875rem; font-weight: 600; color: var(--ink-2); }
+.field .hint { font-size: 0.8125rem; color: var(--muted); }
 
 .input, .select, .textarea {
   width: 100%; min-height: 44px; padding: 10px 14px;
   border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
-  background: var(--card); color: var(--ink);
+  background: var(--card); color: var(--ink); font-size: 1rem;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .textarea { min-height: 88px; resize: vertical; line-height: 1.7; }
@@ -177,11 +177,11 @@ svg { flex: none; }
 
 .segmented {
   display: inline-flex; padding: 4px; gap: 2px;
-  background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px;
+  background: var(--paper-2); border: 1px solid var(--line); border-radius: calc(var(--radius-sm) + 4px);
 }
 .segmented button {
-  min-height: 36px; padding: 0 14px; border: 0; border-radius: 9px;
-  background: transparent; color: var(--muted); font-weight: 500; font-size: 14px;
+  min-height: 40px; padding: 0 14px; border: 0; border-radius: var(--radius-sm);
+  background: transparent; color: var(--muted); font-weight: 600; font-size: 0.9375rem;
   cursor: pointer; white-space: nowrap;
   transition: background-color 0.18s var(--ease), color 0.18s, box-shadow 0.18s;
 }
@@ -191,17 +191,17 @@ svg { flex: none; }
 /* ---------- toast ---------- */
 
 .toast-host {
-  position: fixed; inset-inline: 0; bottom: 24px; z-index: 90;
-  display: grid; justify-items: center; gap: 8px; pointer-events: none;
+  position: fixed; inset-inline: 0; bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 90;
+  display: grid; justify-items: center; gap: 8px; pointer-events: none; padding-inline: 16px;
 }
 .toast {
   display: inline-flex; align-items: center; gap: 10px;
   padding: 12px 18px; border-radius: 12px;
   background: var(--ink); color: var(--paper); box-shadow: var(--shadow-md);
-  font-size: 15px; pointer-events: auto;
+  font-size: 0.9375rem; pointer-events: auto;
   animation: toast-in 0.25s var(--ease);
 }
-.toast svg { width: 18px; height: 18px; color: var(--brass-bright); }
+.toast svg { width: 18px; height: 18px; color: var(--mark); }
 .toast.error svg { color: #ff9b8c; }
 .toast.leaving { animation: toast-out 0.18s ease-in forwards; }
 @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } }
@@ -218,9 +218,9 @@ dialog.modal::backdrop { background: rgba(10, 14, 25, 0.5); backdrop-filter: blu
 dialog.modal[open] { animation: modal-in 0.22s var(--ease); }
 @keyframes modal-in { from { opacity: 0; transform: translateY(8px) scale(0.985); } }
 .modal-body { padding: 24px; display: grid; gap: 14px; }
-.modal-body h2 { font-size: 20px; font-weight: 700; }
+.modal-body h2 { font-size: 1.25rem; font-weight: 700; }
 .modal-body p { color: var(--ink-2); }
-.modal-actions { display: flex; gap: 10px; justify-content: flex-start; padding: 16px 24px; border-top: 1px solid var(--line); background: var(--card-2); border-radius: 0 0 var(--radius) var(--radius); }
+.modal-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-start; padding: 16px 24px; border-top: 1px solid var(--line); background: var(--card-2); border-radius: 0 0 var(--radius) var(--radius); }
 
 mark { background: var(--mark); color: inherit; border-radius: 3px; padding: 0 1px; }
 

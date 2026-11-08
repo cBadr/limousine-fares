@@ -1,10 +1,11 @@
-/* global Fares */
+/* global Fares, FaresTheme */
 (() => {
   const { escapeHtml: esc, fmt, formatDate, formatDateTime, api, icon, toast, bindThemeButton, confirmDialog, download, normalize, debounce } = Fares;
   const $ = (s, root = document) => root.querySelector(s);
   const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 
-  const DOC_KEYS = ['settings', 'vehicles', 'fareTypes', 'sections', 'routes', 'notes'];
+  const DOC_KEYS = ['settings', 'theme', 'vehicles', 'fareTypes', 'sections', 'routes', 'notes'];
+  const REQUIRED_KEYS = ['settings', 'vehicles', 'fareTypes', 'sections', 'routes', 'notes'];
   const DRAFT_KEY = 'fares-admin-draft';
 
   const S = {
@@ -16,7 +17,7 @@
   };
 
   const clone = (o) => JSON.parse(JSON.stringify(o));
-  const docOf = (d) => Object.fromEntries(DOC_KEYS.map((k) => [k, d[k]]));
+  const docOf = (d) => Object.fromEntries(DOC_KEYS.map((k) => [k, d[k] ?? null]));
   const uid = (p) => `${p}_${Array.from(crypto.getRandomValues(new Uint8Array(5)), (b) => b.toString(16).padStart(2, '0')).join('')}`;
 
   function parsePrice(raw) {
@@ -85,6 +86,17 @@
     }
     for (const v of a.vehicles) if (!b.vehicles.some((x) => x.id === v.id)) out.push({ kind: 'del', text: v.name, ctx: 'فئة سيارة' });
     a.fareTypes.forEach((f, i) => { const n = b.fareTypes[i]; if (n && n.name !== f.name) out.push({ kind: 'mod', text: 'اسم تعريفة', from: f.name, to: n.name }); });
+
+    const ta = FaresTheme.normalize(a.theme);
+    const tb = FaresTheme.normalize(b.theme);
+    if (JSON.stringify(ta) !== JSON.stringify(tb)) {
+      const what = [];
+      if (ta.preset !== tb.preset) what.push(`القالب: ${(FaresTheme.PRESETS.find((p) => p.id === tb.preset) || { name: 'مخصص' }).name}`);
+      if (JSON.stringify([ta.light, ta.dark]) !== JSON.stringify([tb.light, tb.dark])) what.push('الألوان');
+      if (ta.fontText !== tb.fontText || ta.fontDisplay !== tb.fontDisplay || ta.fontNumbers !== tb.fontNumbers || ta.numerals !== tb.numerals) what.push('الخطوط');
+      if (ta.scale !== tb.scale || ta.radius !== tb.radius || ta.header !== tb.header || ta.sections !== tb.sections || ta.mode !== tb.mode) what.push('طريقة العرض');
+      out.push({ kind: 'mod', text: 'المظهر', ctx: what.join('، ') });
+    }
 
     const aN = a.notes.map((n) => n.text).join('\n');
     const bN = b.notes.map((n) => n.text).join('\n');
@@ -203,6 +215,7 @@
     zones: { title: 'المناطق', sub: 'أضف المناطق وأعد تسميتها ورتّب ظهورها', icon: 'map', render: renderZones },
     vehicles: { title: 'فئات السيارات والتعريفة', sub: 'أعمدة الأسعار في القائمة', icon: 'car', render: renderVehicles },
     terms: { title: 'الشروط والإضافات', sub: 'تظهر أسفل قائمة الأسعار وفي الطباعة والتصدير', icon: 'list', render: renderTerms },
+    appearance: { title: 'المظهر', sub: 'القوالب والألوان والخطوط — مع معاينة مباشرة', icon: 'palette', render: renderAppearance },
     settings: { title: 'إعدادات القائمة', sub: 'اسم الشركة والعنوان وتاريخ السريان', icon: 'settings', render: renderSettings },
     sep: null,
     history: { title: 'سجل النسخ', sub: 'كل نشر يحفظ نسخة كاملة يمكن استعادتها', icon: 'history', render: renderHistory },
@@ -820,6 +833,335 @@
     });
   }
 
+  // ---------------- appearance ----------------
+  const APPEAR = { mode: 'light', device: 'phone' };
+
+  function themeDraft() {
+    S.draft.theme = FaresTheme.normalize(S.draft.theme);
+    return S.draft.theme;
+  }
+
+  const COLOR_FIELDS = [
+    ['primary', 'اللون الرئيسي', 'الشريط العلوي والمنطقة المختارة'],
+    ['accent', 'لون التمييز', 'الأيقونات والشارات وزر النسخ'],
+    ['bg', 'الخلفية', 'خلفية الصفحة'],
+    ['surface', 'البطاقات', 'خلفية المناطق والجداول'],
+    ['text', 'النص', 'لون الكتابة الأساسي'],
+  ];
+
+  const seg = (key, value, options) => `
+    <div class="segmented seg-wrap" data-seg="${key}" role="group">
+      ${options.map(([v, label]) => `<button type="button" data-val="${v}" aria-pressed="${String(value) === String(v)}">${label}</button>`).join('')}
+    </div>`;
+
+  function sendPreview() {
+    const f = $('#pv-frame');
+    if (f && f.contentWindow) f.contentWindow.postMessage({ type: 'fares:theme', theme: S.draft.theme, mode: APPEAR.mode }, location.origin);
+  }
+  const sendPreviewSoon = debounce(sendPreview, 40);
+  window.addEventListener('message', (e) => {
+    if (e.origin === location.origin && e.data && e.data.type === 'fares:ready' && S.view === 'appearance') sendPreview();
+  });
+
+  function themeChanged() {
+    sendPreviewSoon();
+    refreshStatusSoon();
+  }
+
+  function renderAppearance(root) {
+    const t = themeDraft();
+    root.innerHTML = `
+      <div class="appearance">
+        <div class="appearance-main stack">
+          <section class="panel">
+            <div class="panel-head"><h2>القوالب الجاهزة</h2><p>اختر قالباً كنقطة بداية، ثم عدّل الألوان والخطوط كما تشاء.</p></div>
+            <div class="panel-body presets" id="ap-presets">
+              ${FaresTheme.PRESETS.map((p) => `
+                <button type="button" class="preset" data-preset="${p.id}" aria-pressed="${t.preset === p.id}">
+                  <span class="pm" aria-hidden="true">
+                    <span class="pm-band"><span class="pm-dot"></span><span class="pm-title">قائمة الأسعار</span></span>
+                    <span class="pm-body">
+                      <span class="pm-card"><span class="pm-line"></span><span class="pm-price">1,250</span></span>
+                      <span class="pm-card"><span class="pm-line short"></span><span class="pm-price">850</span></span>
+                    </span>
+                  </span>
+                  <span class="preset-info"><strong>${esc(p.name)}</strong><span>${esc(p.desc)}</span></span>
+                  <span class="preset-check" aria-hidden="true">${icon('check')}</span>
+                </button>`).join('')}
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>الألوان</h2>
+              <div class="segmented" id="ap-mode" role="group" aria-label="الوضع الذي تعدّل ألوانه">
+                <button type="button" data-mode="light" aria-pressed="${APPEAR.mode === 'light'}">${icon('sun')} الوضع الفاتح</button>
+                <button type="button" data-mode="dark" aria-pressed="${APPEAR.mode === 'dark'}">${icon('moon')} الوضع الداكن</button>
+              </div>
+              <p>لكل وضع ألوانه الخاصة. الدرجات الثانوية (الحدود، الخلفيات الخفيفة) تُشتق تلقائياً بشكل متناسق.</p>
+            </div>
+            <div class="panel-body">
+              <div class="color-grid" id="ap-colors"></div>
+              <ul class="checks" id="ap-checks" aria-live="polite"></ul>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><h2>الخطوط</h2><p>كل الخطوط مضمّنة في الموقع وتعمل بدون إنترنت.</p></div>
+            <div class="panel-body stack" id="ap-fonts"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head"><h2>طريقة العرض</h2><p>إعدادات تناسب السائقين: خط أكبر، ورأس صفحة مختصر، ومناطق مطوية.</p></div>
+            <div class="panel-body stack" id="ap-layout"></div>
+            <div class="panel-foot">
+              <button class="btn btn-ghost" type="button" id="ap-reset">${icon('refresh')} استعادة المظهر الافتراضي</button>
+            </div>
+          </section>
+        </div>
+
+        <aside class="appearance-preview" aria-label="معاينة مباشرة">
+          <div class="pv-bar">
+            <strong>معاينة مباشرة</strong>
+            <div class="segmented" id="pv-device-seg" role="group" aria-label="حجم المعاينة">
+              <button type="button" data-device="phone" aria-pressed="${APPEAR.device === 'phone'}" aria-label="جوال" title="جوال">${icon('phoneDevice')}</button>
+              <button type="button" data-device="desktop" aria-pressed="${APPEAR.device === 'desktop'}" aria-label="كمبيوتر" title="كمبيوتر">${icon('monitor')}</button>
+            </div>
+          </div>
+          <div class="pv-stage" id="pv-stage">
+            <div class="pv-device" id="pv-device" data-device="${APPEAR.device}">
+              <iframe id="pv-frame" src="/?preview=1" title="معاينة صفحة الأسعار"></iframe>
+            </div>
+          </div>
+          <p class="pv-note">${icon('eye')} تعرض المعاينة التعديلات قبل النشر، ولا يراها الزوار إلا بعد «مراجعة ونشر».</p>
+        </aside>
+      </div>`;
+
+    paintPresets();
+    paintColors();
+    paintFonts();
+    paintLayout();
+    fitPreview();
+    new ResizeObserver(fitPreview).observe($('#pv-stage'));
+
+    // --- events ---
+    $('#ap-presets').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-preset]');
+      if (!b) return;
+      const p = FaresTheme.PRESETS.find((x) => x.id === b.dataset.preset);
+      Object.assign(t, {
+        preset: p.id, light: { ...p.light }, dark: { ...p.dark },
+        fontText: p.fontText, fontDisplay: p.fontDisplay, fontNumbers: p.fontNumbers,
+        radius: p.radius, scale: p.scale || t.scale,
+      });
+      paintPresets(); paintColors(); paintFonts(); paintLayout();
+      themeChanged();
+      toast(`تم تطبيق قالب «${p.name}» على المسودة`);
+    });
+
+    $('#ap-mode').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-mode]');
+      if (!b) return;
+      APPEAR.mode = b.dataset.mode;
+      $$('#ap-mode button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      paintColors();
+      sendPreview();
+    });
+
+    $('#ap-colors').addEventListener('input', (e) => {
+      const el = e.target;
+      const key = el.dataset.color || el.dataset.hex;
+      if (!key) return;
+      let v = el.value.trim();
+      if (el.dataset.hex) {
+        if (!v.startsWith('#')) v = `#${v}`;
+        const ok = /^#[0-9a-f]{6}$/i.test(v);
+        el.classList.toggle('invalid', !ok);
+        if (!ok) return;
+        $(`[data-color="${key}"]`).value = v.toLowerCase();
+      } else {
+        const hex = $(`[data-hex="${key}"]`);
+        hex.value = v; hex.classList.remove('invalid');
+      }
+      t[APPEAR.mode][key] = v.toLowerCase();
+      t.preset = 'custom';
+      paintPresets();
+      paintChecks();
+      themeChanged();
+    });
+
+    $('#ap-fonts').addEventListener('change', (e) => {
+      const k = e.target.dataset.font;
+      if (!k) return;
+      t[k] = e.target.value;
+      t.preset = t.preset === 'custom' ? 'custom' : t.preset;
+      paintFonts();
+      themeChanged();
+    });
+
+    $('.appearance', root).addEventListener('click', (e) => {
+      const b = e.target.closest('[data-seg] [data-val]');
+      if (!b) return;
+      const key = b.closest('[data-seg]').dataset.seg;
+      t[key] = key === 'scale' ? Number(b.dataset.val) : b.dataset.val;
+      $$(`[data-seg="${key}"] [data-val]`).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      if (key === 'numerals') paintFonts();
+      if (key === 'scale') paintLayout();
+      themeChanged();
+    });
+
+    $('#ap-layout').addEventListener('input', (e) => {
+      if (e.target.id !== 'ap-scale') return;
+      t.scale = Number(e.target.value);
+      $('#ap-scale-val').textContent = `${t.scale}%`;
+      themeChanged();
+    });
+
+    $('#ap-reset').addEventListener('click', async () => {
+      const ok = await confirmDialog({ title: 'استعادة المظهر الافتراضي؟', message: 'سيعود القالب والألوان والخطوط وطريقة العرض إلى الإعداد الأصلي (في المسودة فقط).', confirmText: 'استعادة' });
+      if (!ok) return;
+      S.draft.theme = FaresTheme.normalize(null);
+      renderAppearance(root);
+      themeChanged();
+    });
+
+    $('#pv-device-seg').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-device]');
+      if (!b) return;
+      APPEAR.device = b.dataset.device;
+      $$('#pv-device-seg button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      $('#pv-device').dataset.device = APPEAR.device;
+      fitPreview();
+    });
+
+    $('#pv-frame').addEventListener('load', sendPreview);
+  }
+
+  function paintPresets() {
+    const t = S.draft.theme;
+    $$('#ap-presets .preset').forEach((b) => {
+      const p = FaresTheme.PRESETS.find((x) => x.id === b.dataset.preset);
+      b.setAttribute('aria-pressed', String(t.preset === p.id));
+      const pm = $('.pm', b);
+      const L = p.light;
+      pm.style.setProperty('--pm-primary', L.primary);
+      pm.style.setProperty('--pm-on', FaresTheme.onColor(L.primary));
+      pm.style.setProperty('--pm-accent', L.accent);
+      pm.style.setProperty('--pm-bg', L.bg);
+      pm.style.setProperty('--pm-surface', L.surface);
+      pm.style.setProperty('--pm-text', L.text);
+      $('.pm-title', pm).style.fontFamily = (p.fontDisplay === 'same' ? FaresTheme.font(p.fontText) : FaresTheme.font(p.fontDisplay)).family;
+      $$('.pm-price', pm).forEach((x) => { x.style.fontFamily = (p.fontNumbers === 'same' ? FaresTheme.font(p.fontText) : FaresTheme.font(p.fontNumbers)).family; });
+      $('.preset-info strong', b).style.fontFamily = FaresTheme.font(p.fontText).family;
+    });
+  }
+
+  function paintColors() {
+    const p = S.draft.theme[APPEAR.mode];
+    $('#ap-colors').innerHTML = COLOR_FIELDS.map(([k, label, hint]) => `
+      <div class="color-row">
+        <label class="color-swatch" for="c-${k}">
+          <input type="color" id="c-${k}" data-color="${k}" value="${p[k]}">
+        </label>
+        <div class="color-text">
+          <label for="h-${k}">${label}</label>
+          <span class="hint">${hint}</span>
+        </div>
+        <input class="input hex-input num" id="h-${k}" data-hex="${k}" value="${p[k]}" maxlength="7" dir="ltr" spellcheck="false" aria-label="${label} — كود اللون">
+      </div>`).join('');
+    paintChecks();
+  }
+
+  function paintChecks() {
+    const p = S.draft.theme[APPEAR.mode];
+    const C = FaresTheme.contrast;
+    const rows = [
+      ['النص على الخلفية', C(p.text, p.bg), 4.5],
+      ['النص على البطاقات', C(p.text, p.surface), 4.5],
+      ['لون التمييز على البطاقات', C(p.accent, p.surface), 3],
+      ['الكتابة فوق اللون الرئيسي', C(FaresTheme.onColor(p.primary), p.primary), 4.5],
+    ];
+    const bad = rows.filter(([, r, min]) => r < min).length;
+    $('#ap-checks').innerHTML = `
+      <li class="checks-head">${bad ? `${icon('alert')} ${bad} ${bad === 1 ? 'تنبيه' : 'تنبيهات'} وضوح — قد يصعب القراءة في ضوء الشمس` : `${icon('check')} كل الألوان واضحة ومقروءة`}</li>
+      ${rows.map(([label, r, min]) => `<li class="${r >= min ? 'ok' : 'warn'}">${icon(r >= min ? 'check' : 'alert')}<span>${label}</span><b class="num">${r.toFixed(1)}:1</b><small>المطلوب ${min}:1</small></li>`).join('')}`;
+    $('#ap-checks').classList.toggle('has-warn', !!bad);
+  }
+
+  function paintFonts() {
+    const t = S.draft.theme;
+    const F = FaresTheme.FONTS;
+    const opt = (list, sel) => list.map((f) => `<option value="${f.id}" ${f.id === sel ? 'selected' : ''}>${esc(f.name)} — ${esc(f.note)}</option>`).join('');
+    const textFonts = F.filter((f) => f.ar && !f.display);
+    const displayFonts = F.filter((f) => f.ar);
+    const numFont = t.fontNumbers === 'same' ? FaresTheme.font(t.fontText) : FaresTheme.font(t.fontNumbers);
+    const latinNumWithArab = t.numerals === 'arab' && !numFont.ar;
+    const sampleNums = [450, 1600, 9300].map((n) => new Intl.NumberFormat(t.numerals === 'arab' ? 'ar-EG' : 'en-US').format(n)).join('  ·  ');
+    $('#ap-fonts').innerHTML = `
+      <div class="font-field">
+        <div class="field"><label for="f-text">خط النصوص</label>
+          <select class="select" id="f-text" data-font="fontText">${opt(textFonts, t.fontText)}</select></div>
+        <p class="font-sample" data-sample="fontText">مطار القاهرة — مدينة نصر، التجمع، الرحاب</p>
+      </div>
+      <div class="font-field">
+        <div class="field"><label for="f-display">خط العناوين</label>
+          <select class="select" id="f-display" data-font="fontDisplay"><option value="same" ${t.fontDisplay === 'same' ? 'selected' : ''}>نفس خط النصوص</option>${opt(displayFonts, t.fontDisplay)}</select></div>
+        <p class="font-sample big" data-sample="fontDisplay">الساحل الشمالي</p>
+      </div>
+      <div class="font-field">
+        <div class="field"><label for="f-num">خط الأرقام والأسعار</label>
+          <select class="select" id="f-num" data-font="fontNumbers"><option value="same" ${t.fontNumbers === 'same' ? 'selected' : ''}>نفس خط النصوص</option>${opt(F.filter((f) => !f.display), t.fontNumbers)}</select></div>
+        <p class="font-sample nums" data-sample="fontNumbers">${sampleNums}</p>
+        ${latinNumWithArab ? `<p class="hint warn-note">${icon('alert')} هذا الخط لا يدعم الأرقام العربية (١٢٣)، لذلك ستظهر الأسعار بخط النصوص.</p>` : ''}
+      </div>
+      <div class="field"><span class="field-label">شكل الأرقام</span>
+        ${seg('numerals', t.numerals, [['latn', '<span class="num">123</span> إنجليزية'], ['arab', '١٢٣ عربية']])}
+      </div>`;
+    const text = FaresTheme.font(t.fontText);
+    $('[data-sample="fontText"]').style.fontFamily = text.family;
+    $('[data-sample="fontDisplay"]').style.fontFamily = (t.fontDisplay === 'same' ? text : FaresTheme.font(t.fontDisplay)).family;
+    $('[data-sample="fontNumbers"]').style.fontFamily = (latinNumWithArab ? text : numFont).family;
+  }
+
+  function paintLayout() {
+    const t = S.draft.theme;
+    $('#ap-layout').innerHTML = `
+      <div class="field">
+        <label for="ap-scale">حجم الخط الأساسي <b class="num" id="ap-scale-val">${t.scale}%</b></label>
+        <div class="scale-row">
+          <span class="scale-a small" aria-hidden="true">أ</span>
+          <input type="range" id="ap-scale" min="85" max="140" step="5" value="${t.scale}">
+          <span class="scale-a big" aria-hidden="true">أ</span>
+        </div>
+        ${seg('scale', t.scale, [[100, 'عادي'], [112, 'كبير'], [125, 'كبير جداً']])}
+        <span class="hint">يستطيع الزائر أيضاً تكبير الخط من زر «أ» أعلى الصفحة.</span>
+      </div>
+      <div class="field"><span class="field-label">رأس الصفحة</span>
+        ${seg('header', t.header, [['compact', 'مختصر — يُظهر الأسعار أسرع'], ['full', 'كامل — مع الإحصائيات']])}</div>
+      <div class="field"><span class="field-label">المناطق عند فتح الصفحة</span>
+        ${seg('sections', t.sections, [['collapsed', 'كلها مطوية'], ['first', 'الأولى مفتوحة'], ['expanded', 'كلها مفتوحة']])}</div>
+      <div class="field"><span class="field-label">الحواف</span>
+        ${seg('radius', t.radius, [['sharp', 'حادة'], ['soft', 'ناعمة'], ['round', 'دائرية']])}</div>
+      <div class="field"><span class="field-label">الوضع الافتراضي للزوار</span>
+        ${seg('mode', t.mode, [['auto', 'حسب الجهاز'], ['light', 'فاتح'], ['dark', 'داكن']])}
+        <span class="hint">«حسب الجهاز» يتحول للداكن ليلاً تلقائياً على أغلب الهواتف. ويمكن للزائر التبديل يدوياً.</span></div>`;
+  }
+
+  function fitPreview() {
+    const stage = $('#pv-stage');
+    const dev = $('#pv-device');
+    const frame = $('#pv-frame');
+    if (!stage || !frame) return;
+    const [w, h] = APPEAR.device === 'phone' ? [390, 760] : [1280, 820];
+    const avail = stage.clientWidth - (APPEAR.device === 'phone' ? 24 : 0);
+    const scale = Math.min(1, avail / w);
+    frame.style.width = `${w}px`;
+    frame.style.height = `${h}px`;
+    frame.style.transform = `scale(${scale})`;
+    dev.style.width = `${Math.round(w * scale)}px`;
+    dev.style.height = `${Math.round(h * scale)}px`;
+  }
+
   // ---------------- settings ----------------
   function renderSettings(root) {
     const s = S.draft.settings;
@@ -864,7 +1206,7 @@
       if (!file) return;
       try {
         const data = JSON.parse(await file.text());
-        if (!DOC_KEYS.every((k) => k in data) || !Array.isArray(data.routes)) throw new Error('bad');
+        if (!REQUIRED_KEYS.every((k) => k in data) || !Array.isArray(data.routes)) throw new Error('bad');
         S.draft = clone(docOf(data));
         S.draft.version = S.server.version;
         refreshStatus();

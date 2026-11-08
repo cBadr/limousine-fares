@@ -52,14 +52,18 @@ const Fares = (() => {
     return open ? out + '</mark>' : out;
   }
 
-  const nf = new Intl.NumberFormat('en-US');
-  const fmt = (n) => (n === null || n === undefined ? '' : nf.format(n));
+  // Numeral system follows the theme (latn = 123, arab = ١٢٣).
+  const numerals = () => (window.FaresTheme && window.FaresTheme.current.numerals) || 'latn';
+  const nfCache = {};
+  const nf = () => (nfCache[numerals()] ||= new Intl.NumberFormat(numerals() === 'arab' ? 'ar-EG' : 'en-US'));
+  const fmt = (n) => (n === null || n === undefined ? '' : nf().format(n));
+  const digits = (s) => (numerals() === 'arab' ? String(s).replace(/[0-9]/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]) : String(s));
 
   function formatDate(iso, opts = { day: 'numeric', month: 'long', year: 'numeric' }) {
     if (!iso) return '';
     const d = new Date(iso.length === 10 ? `${iso}T00:00:00` : iso);
     if (Number.isNaN(d.getTime())) return '';
-    return new Intl.DateTimeFormat('ar-EG-u-nu-latn', opts).format(d);
+    return new Intl.DateTimeFormat(`ar-EG-u-nu-${numerals()}`, opts).format(d);
   }
 
   function formatDateTime(iso) {
@@ -125,6 +129,17 @@ const Fares = (() => {
     menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
     eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
     filter: '<path d="M4 5h16l-6 7.5V19l-4 2v-8.5z"/>',
+    share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
+    message: '<path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.2A8.5 8.5 0 1 1 21 12z"/>',
+    type: '<path d="M4 7V5h11v2M9.5 5v14M7 19h5"/><path d="M14 12v-1.5h7V12M17.5 10.5V19M16 19h3"/>',
+    arrowUp: '<path d="M12 19V5M5 12l7-7 7 7"/>',
+    palette: '<path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.7-.8 1.7-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 0 0 5-5C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7.2" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/>',
+    unfold: '<path d="m7 15 5 5 5-5M7 9l5-5 5 5"/>',
+    fold: '<path d="m7 20 5-5 5 5M7 4l5 5 5-5"/>',
+    more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
+    monitor: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+    phoneDevice: '<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/>',
+    refresh: '<path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/>',
   };
 
   function icon(name, cls = '') {
@@ -154,8 +169,10 @@ const Fares = (() => {
   // ---------- theme ----------
   function toggleTheme() {
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
     try { localStorage.setItem('fares-theme', next); } catch { /* ignore */ }
+    const page = document.documentElement.getAttribute('data-page');
+    if (window.FaresTheme) window.FaresTheme.apply(page === 'admin' ? null : window.FaresTheme.current, { userZoom: page === 'public' });
+    else document.documentElement.setAttribute('data-theme', next);
     return next;
   }
 
@@ -167,6 +184,7 @@ const Fares = (() => {
       btn.title = btn.getAttribute('aria-label');
     };
     paint();
+    btn.repaint = paint;
     btn.addEventListener('click', () => { toggleTheme(); paint(); });
   }
 
@@ -206,5 +224,5 @@ const Fares = (() => {
     return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
   }
 
-  return { normalize, escapeHtml, highlight, fmt, formatDate, formatDateTime, api, icon, toast, toggleTheme, bindThemeButton, confirmDialog, download, debounce };
+  return { normalize, escapeHtml, highlight, fmt, digits, formatDate, formatDateTime, api, icon, toast, toggleTheme, bindThemeButton, confirmDialog, download, debounce };
 })();
