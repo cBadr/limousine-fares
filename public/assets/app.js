@@ -1,4 +1,4 @@
-/* global Fares, FaresTheme, XLSX */
+/* global Fares, FaresTheme, FaresExport */
 (() => {
   const { normalize, escapeHtml: esc, highlight, fmt, digits, formatDate, formatDateTime, api, icon, toast, bindThemeButton, download, debounce } = Fares;
   const $ = (s, r = document) => r.querySelector(s);
@@ -369,67 +369,23 @@
   }
 
   // ---------- export & print ----------
-  function exportRows() {
-    const { fareTypes, settings } = state.data;
-    const vehicles = visibleVehicles();
-    const header1 = ['المنطقة', 'الوجهة', 'ملاحظة', 'النوع'];
-    const header2 = ['', '', '', ''];
-    for (const v of vehicles) fareTypes.forEach((f, i) => { header1.push(i === 0 ? v.name : ''); header2.push(f.name); });
-    const rows = [];
-    for (const { section, rows: rs } of groups()) {
-      for (const r of rs) {
-        const row = [section.name, r.name, r.note || '', r.kind === 'flat' ? 'سعر ثابت' : 'توصيل'];
-        for (const v of vehicles) {
-          const pr = r.prices[v.id] || {};
-          fareTypes.forEach((f, i) => {
-            const val = r.kind === 'flat' && i > 0 ? null : pr[f.id];
-            row.push(val == null ? '' : val);
-          });
-        }
-        rows.push(row);
-      }
-    }
-    return { header1, header2, rows, settings, vehicles };
-  }
+  const exportOpts = () => {
+    const scope = [];
+    if (state.section !== 'all') scope.push(state.data.sections.find((x) => x.id === state.section)?.name);
+    if (state.vehicle !== 'all') scope.push(state.data.vehicles.find((x) => x.id === state.vehicle)?.name);
+    if (state.q) scope.push(`بحث: ${state.q}`);
+    return { data: state.data, groups: groups(), vehicles: visibleVehicles(), scope: scope.filter(Boolean) };
+  };
 
-  function fileBase() {
-    const s = state.data.settings;
-    return `${s.title} ${s.effectiveDate || ''}`.trim().replace(/[\\/:*?"<>|]/g, '-');
-  }
-
-  function exportCsv() {
-    const { header2, rows, vehicles } = exportRows();
-    const nF = state.data.fareTypes.length;
-    const head = header2.map((h, i) => (i < 4 ? ['المنطقة', 'الوجهة', 'ملاحظة', 'النوع'][i] : `${vehicles[Math.floor((i - 4) / nF)].name} - ${h}`));
-    const escCsv = (v) => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
-    const csv = [head, ...rows].map((r) => r.map(escCsv).join(',')).join('\r\n');
-    download(`${fileBase()}.csv`, new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
-    toast('تم تصدير ملف CSV');
-  }
-
-  function exportXlsx() {
-    if (typeof XLSX === 'undefined') { toast('مكتبة التصدير لم تُحمّل بعد، حاول مجدداً', 'error'); return; }
-    const { header1, header2, rows, settings } = exportRows();
-    const title = `${settings.title}${settings.effectiveDate ? ` — سارية من ${formatDate(settings.effectiveDate)}` : ''}`;
-    const aoa = [[title], [], header1, header2, ...rows];
-    if (state.data.notes.length) {
-      aoa.push([], ['الشروط والإضافات']);
-      state.data.notes.forEach((n, i) => aoa.push([`${i + 1}. ${n.text}`]));
-    }
-    const ws = XLSX.utils.aoa_to_sheet(aoa);
-    const nF = state.data.fareTypes.length;
-    const merges = [{ s: { r: 0, c: 0 }, e: { r: 0, c: header1.length - 1 } }];
-    for (let c = 4; c < header1.length; c += nF) merges.push({ s: { r: 2, c }, e: { r: 2, c: c + nF - 1 } });
-    for (let c = 0; c < 4; c++) merges.push({ s: { r: 2, c }, e: { r: 3, c } });
-    const notesStart = 4 + rows.length + 2;
-    state.data.notes.forEach((_, i) => merges.push({ s: { r: notesStart + i, c: 0 }, e: { r: notesStart + i, c: header1.length - 1 } }));
-    ws['!merges'] = merges;
-    ws['!cols'] = [{ wch: 18 }, { wch: 60 }, { wch: 30 }, { wch: 10 }, ...header1.slice(4).map(() => ({ wch: 12 }))];
-    const wb = XLSX.utils.book_new();
-    wb.Workbook = { Views: [{ RTL: true }] };
-    XLSX.utils.book_append_sheet(wb, ws, 'قائمة الأسعار');
-    XLSX.writeFile(wb, `${fileBase()}.xlsx`);
-    toast('تم تصدير ملف Excel');
+  // The professional print/PDF layout lives on its own page and keeps the current filters.
+  function printUrl(auto) {
+    const p = new URLSearchParams();
+    if (state.q) p.set('q', state.q);
+    if (state.vehicle !== 'all') p.set('v', state.vehicle);
+    if (state.section !== 'all') p.set('s', state.section);
+    if (auto) p.set('auto', '1');
+    const qs = p.toString();
+    return `/print${qs ? `?${qs}` : ''}`;
   }
 
   function updatePrintMeta() {
@@ -446,7 +402,6 @@
     ].filter(Boolean).join('<br>');
   }
 
-  function printNow() { updatePrintMeta(); window.print(); }
 
   // ---------- visitor text size ----------
   const ZOOMS = [1, 1.15, 1.3];
@@ -586,12 +541,11 @@
       if (!b || !state.data) return;
       closeMenu();
       const kind = b.dataset.export;
-      if (kind === 'xlsx') exportXlsx();
-      if (kind === 'csv') exportCsv();
-      if (kind === 'print') printNow();
-      if (kind === 'pdf') { toast('اختر «حفظ بتنسيق PDF» من نافذة الطباعة'); setTimeout(printNow, 400); }
+      if (kind === 'xlsx' || kind === 'csv') FaresExport.run(kind, exportOpts());
+      if (kind === 'print') location.href = printUrl(false);
+      if (kind === 'pdf') location.href = printUrl(true);
     });
-    $('#print-btn').addEventListener('click', () => state.data && printNow());
+    $('#print-btn').addEventListener('click', () => { if (state.data) location.href = printUrl(false); });
     window.addEventListener('beforeprint', updatePrintMeta);
 
     $('#zoom-btn').addEventListener('click', cycleZoom);
@@ -637,10 +591,10 @@
     $('#export-btn').innerHTML = `${icon('download')}<span>تصدير</span>`;
     $('#export-btn').setAttribute('aria-label', 'طباعة وتصدير');
     const items = {
-      print: ['print', 'طباعة', 'القائمة المعروضة حالياً'],
-      xlsx: ['sheet', 'ملف Excel', 'xlsx — قابل للتعديل'],
-      csv: ['file', 'ملف CSV', 'للأنظمة والجداول'],
-      pdf: ['download', 'ملف PDF', 'عبر نافذة الطباعة'],
+      print: ['print', 'معاينة الطباعة', 'مستند A4 منسّق بخيارات'],
+      pdf: ['download', 'ملف PDF', 'نسخة رسمية جاهزة للإرسال'],
+      xlsx: ['sheet', 'ملف Excel منسّق', 'بألوان القائمة وجاهز للطباعة'],
+      csv: ['file', 'ملف CSV', 'بيانات خام للأنظمة'],
     };
     $$('[data-export]').forEach((b) => {
       const [ic, t, sub] = items[b.dataset.export];

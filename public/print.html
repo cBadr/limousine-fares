@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-page="print">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>طباعة قائمة الأسعار</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <script src="/assets/theme.js"></script>
+  <link rel="stylesheet" href="/assets/fonts.css">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/print.css" id="print-css">
+</head>
+<body>
+  <header class="pt-bar no-print">
+    <div class="pt-bar-top">
+      <a class="btn btn-ghost" href="/" id="back-link"></a>
+      <h1>معاينة الطباعة</h1>
+      <div class="pt-bar-actions">
+        <button class="btn" type="button" id="xlsx-btn"></button>
+        <button class="btn btn-brass" type="button" id="print-btn"></button>
+      </div>
+    </div>
+
+    <form class="pt-options" id="options" aria-label="خيارات الطباعة">
+      <fieldset>
+        <legend>المناطق</legend>
+        <select class="select" id="opt-section" aria-label="المناطق"></select>
+      </fieldset>
+      <fieldset>
+        <legend>فئات السيارات</legend>
+        <div class="checks-row" id="opt-vehicles"></div>
+      </fieldset>
+      <fieldset>
+        <legend>اتجاه الصفحة</legend>
+        <div class="segmented" data-opt="orientation" role="group" aria-label="اتجاه الصفحة">
+          <button type="button" data-val="auto">تلقائي</button>
+          <button type="button" data-val="portrait">طولي</button>
+          <button type="button" data-val="landscape">عرضي</button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>الألوان</legend>
+        <div class="segmented" data-opt="ink" role="group" aria-label="الألوان">
+          <button type="button" data-val="color">ملوّن</button>
+          <button type="button" data-val="save">موفّر للحبر</button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>حجم الخط</legend>
+        <div class="segmented" data-opt="density" role="group" aria-label="حجم الخط">
+          <button type="button" data-val="comfortable">مريح</button>
+          <button type="button" data-val="compact">مضغوط</button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>يتضمن</legend>
+        <div class="checks-row">
+          <label><input type="checkbox" data-opt-check="notes"> الملاحظات</label>
+          <label><input type="checkbox" data-opt-check="terms"> الشروط</label>
+          <label><input type="checkbox" data-opt-check="serial"> الترقيم</label>
+          <label><input type="checkbox" data-opt-check="summary"> الملخص</label>
+        </div>
+      </fieldset>
+    </form>
+    <p class="pt-hint" id="pt-hint"></p>
+  </header>
+
+  <main class="stage" id="stage">
+    <article class="doc" id="doc" aria-live="polite">
+      <p class="doc-loading">جارٍ تجهيز المستند…</p>
+    </article>
+  </main>
+
+  <script src="/assets/common.js" defer></script>
+  <script src="/assets/export.js" defer></script>
+  <script src="/assets/print.js" defer></script>
+</body>
+</html>

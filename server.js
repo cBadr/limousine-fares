@@ -28,6 +28,7 @@ function serveStatic(req, res, pathname) {
   let rel = decodeURIComponent(pathname);
   if (rel === '/') rel = '/index.html';
   if (rel === '/admin' || rel === '/admin/') rel = '/admin/index.html';
+  if (rel === '/print') rel = '/print.html';
   const file = path.normalize(path.join(PUBLIC_DIR, rel));
   if (!file.startsWith(PUBLIC_DIR + path.sep)) return send(res, 403, 'Forbidden');
   fs.stat(file, (err, st) => {

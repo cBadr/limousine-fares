@@ -8,6 +8,6 @@ SIL Open Font License, Version 1.1 (https://openfontlicense.org).
 IBM Plex Sans Arabic, Reem Kufi, Cairo, Tajawal, Almarai, Noto Kufi Arabic, Readex Pro, Rubik,
 Changa, El Messiri, Noto Naskh Arabic, Inter, Oswald, Roboto Mono.
 
-## SheetJS Community Edition (xlsx.full.min.js) — Apache License 2.0
+## ExcelJS 4.4.0 (exceljs.min.js) — MIT License
 
-https://sheetjs.com — used client-side for Excel export.
+https://github.com/exceljs/exceljs — used client-side for formatted Excel export.

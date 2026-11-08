@@ -65,9 +65,9 @@
           <button class="btn menu-btn" id="export-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="export-menu"></button>
           <div class="menu" id="export-menu" role="menu" hidden>
             <button role="menuitem" type="button" data-export="print"></button>
+            <button role="menuitem" type="button" data-export="pdf"></button>
             <button role="menuitem" type="button" data-export="xlsx"></button>
             <button role="menuitem" type="button" data-export="csv"></button>
-            <button role="menuitem" type="button" data-export="pdf"></button>
           </div>
         </div>
       </div>
@@ -111,8 +111,8 @@
 
   <dialog class="sheet" id="sheet" aria-labelledby="sheet-title"></dialog>
 
-  <script src="/vendor/xlsx.full.min.js" defer></script>
   <script src="/assets/common.js" defer></script>
+  <script src="/assets/export.js" defer></script>
   <script src="/assets/app.js" defer></script>
 </body>
 </html>
